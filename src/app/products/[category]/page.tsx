@@ -73,7 +73,7 @@ export default async function CategoryPage({
       >
         <Reveal>
           {products.length > 0 ? (
-            <ul className="grid list-none grid-cols-2 gap-x-5 gap-y-8 p-0 md:grid-cols-4">
+            <ul className="product-grid">
               {products.map((p) => (
                 <li key={p.slug}>
                   <ProductChip product={p} />

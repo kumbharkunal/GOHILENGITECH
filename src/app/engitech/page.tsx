@@ -48,7 +48,7 @@ export default function EngitechPage() {
       <section data-seam="0.5" className="container-page section-y pt-0">
         <Reveal>
           <h2 className="text-h2">Also built here</h2>
-          <ul className="mt-8 grid list-none grid-cols-2 gap-x-5 gap-y-8 p-0 md:grid-cols-4">
+          <ul className="product-grid mt-8">
             {REST.map((p) => (
               <li key={p.slug}>
                 <ProductChip product={p} />

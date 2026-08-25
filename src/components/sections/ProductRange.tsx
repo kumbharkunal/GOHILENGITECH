@@ -1,11 +1,15 @@
 /**
  * A range of products, used twice on the home page: once for what Gohil builds
- * and once for what they supply. DESIGN.md 5.5, layout family C.
+ * and once for what they supply.
  *
- * Asymmetric on purpose. A row of equal cards is the banned pattern, and it
- * would also be wrong here: the cut-outs are different shapes and sizes, and
- * forcing them into identical boxes wastes the only real photography we have.
- * The first item takes a wider cell, the rest fill around it.
+ * This was DESIGN.md 5.5 family C, an asymmetric grid where the first item took
+ * a 2x2 cell. The client asked for uniform cards instead: to the person who
+ * owns the machines, one photograph at twice the size of its neighbours reads
+ * as the images being wrong rather than as emphasis. The asymmetric version
+ * also only tiled cleanly at 5 or 9 items and orphaned a row at every other
+ * count, which it did twice in a week as the catalogue grew.
+ *
+ * All sizing now lives in .product-grid, shared with every other chip list.
  */
 
 import Link from 'next/link'
@@ -40,18 +44,10 @@ export function ProductRange({
         <h2 className={marker ? 'mt-3 text-h2' : 'text-h2'}>{heading}</h2>
         <p className="mt-4 max-w-[54ch] text-body text-fg-muted">{body}</p>
 
-        <ul className="range mt-10" data-side={side}>
-          {products.map((p, i) => (
-            <li key={p.slug} className={i === 0 ? 'range__lead' : undefined}>
-              <ProductChip
-                product={p}
-                wide={i === 0}
-                sizes={
-                  i === 0
-                    ? '(max-width: 768px) 92vw, 420px'
-                    : '(max-width: 768px) 45vw, 220px'
-                }
-              />
+        <ul className="product-grid mt-10" data-side={side}>
+          {products.map((p) => (
+            <li key={p.slug}>
+              <ProductChip product={p} sizes="(max-width: 768px) 45vw, 240px" />
             </li>
           ))}
         </ul>

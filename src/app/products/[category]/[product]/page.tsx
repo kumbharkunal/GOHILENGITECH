@@ -205,7 +205,7 @@ export default async function ProductPage({
         >
           <Reveal>
             <h2 className="text-h2">Also in {cat.name.toLowerCase()}</h2>
-            <ul className="mt-8 grid list-none grid-cols-2 gap-x-5 gap-y-8 p-0 md:grid-cols-4">
+            <ul className="product-grid mt-8">
               {siblings.map((s) => (
                 <li key={s.slug}>
                   <ProductChip product={s} />

@@ -835,45 +835,44 @@
 }
 
 /* ============================================================
-   Product range. DESIGN.md 5.5 family C.
-   Asymmetric: the lead item takes a wider cell. A row of equal
-   cards is banned, and would waste the only photography we have.
+   Product grid. Every list of chips on the site uses this one.
+
+   This supersedes the asymmetric range in DESIGN.md 5.5 family C, at the
+   client's direction. That layout gave the first item a 2x2 cell, which
+   meant a catalogue only tiled cleanly at 5 or 9 items and left an orphan
+   at any other count. It also read, to the person who owns the machines,
+   as the photographs being inconsistently sized rather than as emphasis.
+
+   Flex rather than grid, because only flex centres a short final row.
+   `justify-content: center` is inert while a row is full, since the bases
+   sum to exactly 100% minus the gaps, and takes effect only on the last
+   row when it is short. That is the whole requirement.
    ============================================================ */
 
-.range {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px 20px;
   list-style: none;
   padding: 0;
 }
 
+/* Two up on a phone. 20px of gutter between the pair. */
+.product-grid > li {
+  flex: 0 0 calc((100% - 20px) / 2);
+  min-width: 0;
+}
+
 @media (min-width: 768px) {
-  .range {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
+  .product-grid > li {
+    /* Four up: three gutters of 20px. */
+    flex: 0 0 calc((100% - 60px) / 4);
   }
 
-  .range__lead {
-    grid-column: span 2;
-    grid-row: span 2;
-  }
-
-  .range__lead .product-chip {
-    height: 100%;
-  }
-
-  .range__lead .product-chip__frame {
-    aspect-ratio: auto;
-    height: 100%;
-  }
-
-  /* Backstop for an odd count. The lead occupies four cells, so the grid only
-     fills cleanly at 5 or 9 items. A single item left over on a third row read
-     as a mistake, so a trailing item widens to two columns and reads as a
-     deliberate second feature card instead. */
-  .range > li:nth-child(6):last-child {
-    grid-column: span 2;
+  /* Three up, for the category cards on /industrial. Two gutters. */
+  .product-grid--3 > li {
+    flex: 0 0 calc((100% - 40px) / 3);
   }
 }
 

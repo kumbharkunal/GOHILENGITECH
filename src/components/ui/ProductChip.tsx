@@ -11,11 +11,12 @@ import { productImageSrc } from '@/lib/product-images'
  * how a chip already nested inside a link (a category card) opts out rather
  * than producing nested anchors.
  *
- * Two encodings exist for every photograph. A chip in a grid is around 260 CSS
+ * Two encodings exist for every photograph. A chip in a grid is around 240 CSS
  * px, so it takes the 520px file; the handful of chips that run large take the
  * full width one. A static export cannot resize on demand, so this choice is
  * the only thing standing between a phone and a megabyte per image. See
- * scripts/optimize-products.py.
+ * scripts/optimize-images.py, and lib/product-images.ts for what happens when
+ * that script has not been run.
  */
 
 export function ProductChip({

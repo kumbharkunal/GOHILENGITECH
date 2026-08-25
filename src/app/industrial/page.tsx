@@ -28,7 +28,7 @@ export default function IndustrialPage() {
 
       <section data-seam="0.08" className="container-page section-y">
         <Reveal>
-          <ul className="grid list-none grid-cols-2 gap-x-5 gap-y-9 p-0 md:grid-cols-3">
+          <ul className="product-grid product-grid--3">
             {SUPPLY_CATEGORIES.map((c) => {
               const lead = byCategory(c.slug).find((p) => p.image)
               return (

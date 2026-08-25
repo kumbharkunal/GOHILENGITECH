@@ -32,7 +32,7 @@ export default function ProductsPage() {
         >
           <Reveal>
             <h2 className="text-h2">{group.label}</h2>
-            <ul className="mt-8 grid list-none grid-cols-2 gap-x-5 gap-y-9 p-0 md:grid-cols-4">
+            <ul className="product-grid mt-8">
               {group.list.map((c) => {
                 const lead = byCategory(c.slug).find((p) => p.image)
                 const sample = byCategory(c.slug)[0]

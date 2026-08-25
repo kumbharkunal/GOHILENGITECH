@@ -72,7 +72,7 @@ export default function Home() {
           <p className="marker">{HOME.supply.marker}</p>
           <h2 className="mt-3 text-h2">{HOME.supply.heading}</h2>
           <p className="mt-4 max-w-[54ch] text-body text-fg-muted">{HOME.supply.body}</p>
-          <ul className="mt-10 grid list-none grid-cols-2 gap-x-5 gap-y-8 p-0 md:grid-cols-4">
+          <ul className="product-grid mt-10">
             {GEAR_FAMILIES.map((c) => {
               const lead = byCategory(c.slug).find((p) => p.image)
               return (
