@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { PageHeader } from '@/components/sections/PageHeader'
-import { EnquiryForm } from '@/components/sections/EnquiryForm'
+import { EnquiryForm } from '@/components/sections/EnquiryFormLazy'
 import { RatioFinder } from '@/components/sections/RatioFinder'
 import { Reveal } from '@/components/ui/Reveal'
 import { GENERAL_FAQ } from '@/data/faq'

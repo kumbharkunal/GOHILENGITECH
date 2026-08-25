@@ -5,7 +5,7 @@ import { COMPANY, PEOPLE } from '@/data/company'
 import { GENERAL_FAQ } from '@/data/faq'
 import { whatsappGeneral, telUrl } from '@/lib/whatsapp'
 import { PageHeader } from '@/components/sections/PageHeader'
-import { EnquiryForm } from '@/components/sections/EnquiryForm'
+import { EnquiryForm } from '@/components/sections/EnquiryFormLazy'
 import { Reveal } from '@/components/ui/Reveal'
 
 export const metadata: Metadata = {
