@@ -250,12 +250,21 @@ export const PRODUCTS: readonly Product[] = [
     confirmSide: true,
   },
 
+  {
+    slug: 'customized-gearbox-flange',
+    name: 'Customized Gearbox',
+    image: 'customized-gearbox-flange',
+    alt: 'Custom-engineered flange-mounted industrial gearbox',
+    side: 'build',
+    category: 'customized',
+  },
+
   // --- build: what they fabricate ---
   {
     slug: 'stacker-conveyor',
     name: 'Stacker Conveyor',
-    image: null,
-    alt: 'Stacker conveyor',
+    image: 'stacker-conveyor',
+    alt: 'Mobile stacker conveyor on wheels with inclined rubber belt',
     side: 'build',
     category: 'conveyors',
     // From their own Instagram post. The only product on the site with
