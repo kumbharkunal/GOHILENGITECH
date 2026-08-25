@@ -27,6 +27,26 @@ npm run build      # static export into out/
 
 **Cloudflare Pages:** build command `npm run build`, output directory `out`. Nothing else to configure, no adapter and no Workers runtime, because every route is prerendered.
 
+### The lock file must be generated on Linux
+
+```bash
+npm run lock:linux    # needs Docker running
+```
+
+Do not commit a `package-lock.json` generated on Windows or macOS. This is not
+a preference, it is a build failure.
+
+Around 78 packages in this tree are platform specific (`sharp` and its
+`@img/*` binaries, mostly), so the dependency graph differs by operating
+system, and npm hoists differently as a result. Concretely: on Windows npm
+puts `picomatch@2` at the root for `micromatch` and nests `4` under
+`tinyglobby`. On Linux it does the opposite. `npm ci` then refuses the lock
+with `lock file's picomatch@2.3.2 does not satisfy picomatch@4.0.7`, and the
+deploy fails while everything passes locally.
+
+If you run `npm install` on Windows it will silently rewrite the lock back to
+the Windows shape. Regenerate with the command above before committing.
+
 ## The design
 
 Read **`DESIGN.md` first.** Every colour, size, weight, radius, duration and easing value in the codebase traces back to it. If a value is not in that file, it does not belong in the code.
