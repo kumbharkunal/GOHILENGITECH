@@ -251,11 +251,14 @@ export function MobileNav({
               className="flex items-center justify-between gap-3 rounded-sm border px-4 py-3"
               style={{ borderColor: 'var(--line-strong)', color: 'var(--fg-primary)' }}
             >
-              <span className="flex items-center gap-2">
-                <Phone className="size-4" style={{ color: 'var(--fg-secondary)' }} aria-hidden="true" />
+              {/* The name gives way, never the number. See /contact. */}
+              <span className="flex min-w-0 items-center gap-2 text-body">
+                <Phone className="size-4 shrink-0" style={{ color: 'var(--fg-secondary)' }} aria-hidden="true" />
                 {p.name}
               </span>
-              <span className="font-mono text-data">{p.phoneDisplay}</span>
+              <span className="shrink-0 whitespace-nowrap font-mono text-data">
+                {p.phoneDisplay}
+              </span>
             </a>
           ))}
 

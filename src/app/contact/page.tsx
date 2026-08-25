@@ -35,14 +35,18 @@ export default function ContactPage() {
                 <a
                   key={p.phone}
                   href={telUrl(p.phone)}
-                  className="flex items-center justify-between gap-4 rounded-md border bg-card px-5 py-4"
+                  className="flex items-center justify-between gap-3 rounded-md border bg-card px-4 py-4 sm:gap-4 sm:px-5"
                   style={{ borderColor: 'var(--line-hairline)' }}
                 >
-                  <span className="flex items-center gap-2.5 text-h3">
-                    <Phone className="size-5 text-fg-muted" aria-hidden="true" />
+                  {/* The name gives way, never the number. A phone number
+                      broken across two lines cannot be read back to someone. */}
+                  <span className="flex min-w-0 items-center gap-2.5 text-body sm:text-h3">
+                    <Phone className="size-5 shrink-0 text-fg-muted" aria-hidden="true" />
                     {p.name}
                   </span>
-                  <span className="font-mono text-data">{p.phoneDisplay}</span>
+                  <span className="shrink-0 whitespace-nowrap font-mono text-data">
+                    {p.phoneDisplay}
+                  </span>
                 </a>
               ))}
 
@@ -59,9 +63,9 @@ export default function ContactPage() {
 
               <a
                 href={`mailto:${COMPANY.email}`}
-                className="flex items-center gap-2 text-body text-fg-muted"
+                className="flex items-center justify-center gap-2 break-all text-center text-body text-fg-muted"
               >
-                <Mail className="size-4" aria-hidden="true" />
+                <Mail className="size-4 shrink-0" aria-hidden="true" />
                 {COMPANY.email}
               </a>
             </div>
