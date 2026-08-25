@@ -32,6 +32,11 @@ PALE = "#D3D5D7"
 GRAPHITE = "#646668"
 
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public", "brand")
+APP_DIR = os.path.join(os.path.dirname(__file__), "..", "src", "app")
+
+# Apple renders a touch icon on an opaque tile and composites transparency
+# against black, so this one gets the page ground rather than an alpha hole.
+MIST = "#EAEBED"
 
 
 def pt(deg: float, r: float) -> tuple[float, float]:
@@ -150,6 +155,98 @@ export const MARK_COLOURS = {{
 }} as const
 """
 
+def render_mark(px: int, background: str | None = None):
+    """
+    The mark as a raster, drawn from the same constants as the SVG above rather
+    than by rasterising the SVG. No rasteriser is a dependency of this project,
+    and re-deriving the geometry here keeps the two cuts honest: if the ring
+    ever moves, both move together or neither does.
+
+    Supersampled 8x and reduced with Lanczos, because the edges that matter are
+    the flat radial end caps and a 16px icon shows every stair on them.
+
+    PIL measures angles clockwise from east; the constants above are maths
+    convention, counter-clockwise from east. The two are mirrored in y, so each
+    maths span [a, b] becomes the PIL span [-b, -a]:
+
+        orange  maths  45 to 225  ->  PIL 135 to 315
+        pale    maths 225 to 270  ->  PIL  90 to 135
+        the G   maths 270 to 360  ->  PIL   0 to  90
+    """
+    from PIL import Image, ImageChops, ImageDraw
+
+    ss = 8
+    size = px * ss
+    # The ring is drawn at 92% of the tile, which is the usual favicon breathing
+    # room. Below that it reads as a dot on a browser tab.
+    scale = (size * 0.92) / (R_OUT * 2)
+    cx = cy = size / 2
+
+    def box(r: float):
+        rr = r * scale
+        return [cx - rr, cy - rr, cx + rr, cy + rr]
+
+    def annulus(start: float, end: float):
+        """One ring segment as an 8 bit mask, with the bore punched out."""
+        m = Image.new("L", (size, size), 0)
+        d = ImageDraw.Draw(m)
+        d.pieslice(box(R_OUT), start, end, fill=255)
+        d.ellipse(box(R_IN), fill=0)
+        return m
+
+    pale_m = annulus(90, 135)
+    arc_m = annulus(135, 315)
+
+    # The G is the quarter annulus plus the crossbar. The bar runs from the
+    # centre out to the outer circle, and its corners land exactly on that
+    # circle at y = cy +/- HALF_BAR, so it needs no clipping. It deliberately
+    # crosses the bore: that crossing is what makes the ring read as a G.
+    g_m = annulus(0, 90)
+    bar = Image.new("L", (size, size), 0)
+    x_out_top = CX + math.sqrt(R_OUT**2 - HALF_BAR**2)
+    ImageDraw.Draw(bar).rectangle(
+        [cx, cy - HALF_BAR * scale, cx + (x_out_top - CX) * scale, cy + HALF_BAR * scale],
+        fill=255,
+    )
+    g_m = ImageChops.lighter(g_m, bar)
+
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0) if background is None else background)
+    # Same paint order as the SVG: pale, then the G, then the orange arc on top.
+    for colour, mask in ((PALE, pale_m), (GRAPHITE, g_m), (ORANGE, arc_m)):
+        img.paste(colour, mask=mask)
+
+    return img.resize((px, px), Image.LANCZOS)
+
+
+def build_icons() -> None:
+    """favicon.ico, icon.svg and apple-icon.png, all from the geometry above."""
+    try:
+        from PIL import Image  # noqa: F401
+    except ImportError:
+        print("  ! Pillow not installed, skipping the raster icons")
+        return
+
+    os.makedirs(APP_DIR, exist_ok=True)
+
+    # Next.js App Router picks these up by filename. icon.svg is what every
+    # current browser actually uses; the .ico is the fallback for the ones
+    # that do not take an SVG.
+    svg_path = os.path.join(APP_DIR, "icon.svg")
+    with open(svg_path, "w", encoding="utf-8") as fh:
+        fh.write(FULL)
+    print(f"wrote {os.path.normpath(svg_path)}")
+
+    ico_path = os.path.join(APP_DIR, "favicon.ico")
+    sizes = [16, 32, 48, 64, 128, 256]
+    base = render_mark(256)
+    base.save(ico_path, format="ICO", sizes=[(s, s) for s in sizes])
+    print(f"wrote {os.path.normpath(ico_path)}  ({', '.join(str(s) for s in sizes)})")
+
+    apple_path = os.path.join(APP_DIR, "apple-icon.png")
+    render_mark(180, background=MIST).convert("RGB").save(apple_path, "PNG")
+    print(f"wrote {os.path.normpath(apple_path)}  (180, on {MIST})")
+
+
 if __name__ == "__main__":
     os.makedirs(OUT_DIR, exist_ok=True)
     ts_dir = os.path.join(os.path.dirname(__file__), "..", "src", "data")
@@ -167,6 +264,8 @@ if __name__ == "__main__":
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(body)
         print(f"wrote {os.path.normpath(path)}  ({len(body)} bytes)")
+
+    build_icons()
 
     print()
     print(f"  outer radius {R_OUT}  inner {R_IN}  stroke {STROKE}")
