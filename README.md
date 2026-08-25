@@ -25,7 +25,7 @@ npm run dev        # http://localhost:3000
 npm run build      # static export into out/
 ```
 
-Deploy on Cloudflare Pages with build command `npm run build` and output directory `out`.
+**Cloudflare Pages:** build command `npm run build`, output directory `out`. Nothing else to configure, no adapter and no Workers runtime, because every route is prerendered.
 
 ## The design
 
@@ -56,9 +56,11 @@ python scripts/build-mark.py       # the ring and G, measured geometry
 python scripts/build-lockup.py     # GROUP wordmark and the full lockup
 python scripts/build-products.py   # 21 product cut-outs
 python scripts/build-dealers.py    # 10 principal marks
-python scripts/build-qr.mjs        # QR codes
 python scripts/build-og.py         # Open Graph card
+cd scripts && node build-qr.mjs    # QR codes (needs the tooling install below)
 ```
+
+The Python scripts need `pillow`, `numpy` and `scipy`.
 
 The mark was rebuilt as vector from the raster and verified at 98.6% pixel agreement against the source.
 
@@ -66,10 +68,17 @@ The mark was rebuilt as vector from the raster and verified at 98.6% pixel agree
 
 ## QA
 
+The QA and asset tooling lives in its own package under `scripts/`, deliberately
+not in the root `package.json`. Cloudflare Pages runs `npm clean-install` on
+every deploy, and a static site build has no reason to install Lighthouse and a
+browser driver. Keeping them separate also stops Lighthouse's Node engine
+requirement from constraining the deploy runtime.
+
 ```bash
-npm run build
-npx serve out -l 4321
-node scripts/qa.mjs
+npm run build                 # from the repo root
+cd scripts && npm install     # once
+npm run serve &               # serves ../out on :4321
+npm run qa
 ```
 
 21 checks: Lighthouse across all four categories, `prefers-reduced-motion`

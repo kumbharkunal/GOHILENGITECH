@@ -1,0 +1,19 @@
+{
+  "name": "gohil-group-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-time and QA tooling. Deliberately NOT in the root package.json: Cloudflare Pages runs npm clean-install on every deploy, and there is no reason for a static site build to install Lighthouse and a browser driver. Keeping them here also stops Lighthouse's Node engine requirement from constraining the deploy runtime.",
+  "scripts": {
+    "qa": "node qa.mjs",
+    "serve": "serve ../out -l 4321 --no-clipboard",
+    "qr": "node build-qr.mjs"
+  },
+  "devDependencies": {
+    "chrome-launcher": "^1.2.1",
+    "lighthouse": "^13.4.1",
+    "puppeteer-core": "^25.9.0",
+    "qrcode": "^1.5.4",
+    "serve": "^14.2.6"
+  }
+}
