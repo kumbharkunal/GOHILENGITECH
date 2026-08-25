@@ -78,7 +78,8 @@ Defined once in `src/styles/globals.css` under Tailwind v4 `@theme`. RGB triplet
   --color-mist:          #EAEBED;  /* rgb(234 235 237) */
   --color-ink:           #0E1012;  /* rgb(14 16 18)    */
 
-  /* Dark mode surfaces */
+  /* Reversed panel surfaces. Used by the ink sections and the footer,
+     which are the only inversions on an otherwise light site. */
   --color-surface:       #16191C;  /* rgb(22 25 28)    */
   --color-surface-2:     #1E2226;  /* rgb(30 34 38)    */
 
@@ -92,21 +93,21 @@ Defined once in `src/styles/globals.css` under Tailwind v4 `@theme`. RGB triplet
 
 ### 2.2 Semantic roles
 
-| Semantic token | Light mode | Dark mode |
-|---|---|---|
-| `--bg-page` | `mist` | `ink` |
-| `--bg-surface` | `#FFFFFF` | `surface` |
-| `--bg-surface-raised` | `#FFFFFF` | `surface-2` |
-| `--bg-inverted` | `ink` | `mist` |
-| `--text-primary` | `ink` | `mist` |
-| `--text-secondary` | `graphite` | `steel` |
-| `--text-accent` | `orange-text` | `ember` |
-| `--text-inverted` | `mist` | `ink` |
-| `--border-hairline` | `steel` at 45% | `steel` at 28% |
-| `--border-strong` | `graphite` | `steel` |
-| `--focus-ring` | `orange` | `ember` |
-| `--field-build` | `orange` | `orange` |
-| `--field-supply` | `steel` | `surface-2` |
+| Semantic token | Value |
+|---|---|
+| `--bg-page` | `mist` |
+| `--bg-surface` | `#FFFFFF` |
+| `--bg-surface-raised` | `#FFFFFF` |
+| `--bg-inverted` | `ink` |
+| `--text-primary` | `ink` |
+| `--text-secondary` | `graphite` |
+| `--text-accent` | `orange-text` |
+| `--text-inverted` | `mist` |
+| `--border-hairline` | `steel` at 45% |
+| `--border-strong` | `graphite` |
+| `--focus-ring` | `orange` |
+| `--field-build` | `orange` |
+| `--field-supply` | `steel` |
 
 ### 2.3 Verified contrast matrix
 
@@ -127,24 +128,12 @@ Computed, not estimated. WCAG 2.1. AA body needs 4.5:1, AA large (18.66px bold o
 | `machine-blue-text` | **4.54:1** | AA body | Machine-blue text on light |
 | `steel` | **2.42:1** | **FAIL** | **Strokes and dividers only. Never text.** |
 
-**Dark mode, ground `ink #0E1012`**
-
-| Foreground | Ratio | Verdict | Permitted use |
-|---|---|---|---|
-| `mist` | **15.98:1** | AAA | Headings, body |
-| `ember` | **7.62:1** | AAA | Accent text, links |
-| `steel` | **6.60:1** | AA body | Secondary text. Note: legal here, illegal on light. |
-| `orange` | **5.07:1** | AA body | Accent text, fills |
-| `ink` on `ember` fill | **7.62:1** | AAA | Primary button in dark mode |
-| `machine-blue` | 4.60:1 | AA body | Diagram accents |
-| `graphite` | 3.31:1 | AA large only | Disabled text, hairlines |
-
 ### 2.4 Rules that fall out of the matrix
 
 1. **The primary CTA is orange fill with an ink label, never white.** White on orange is 3.76:1 and fails AA. Ink on orange is 5.07:1 and passes. It also reads like a machine nameplate, which is the correct register.
-2. **`steel` is a stroke token in light mode and a text token in dark mode.** This asymmetry is deliberate and must be respected. A component that uses `steel` for text on light is a bug.
+2. **`steel` is a stroke token, never a text token.** At 2.42:1 on `mist` it fails outright. A component that sets text in `steel` is a bug. It is still used freely for hairlines, dividers and the dashed ring in the loader.
 3. **Small orange text uses `orange-text`, never `orange`.** `orange` is reserved for fills, borders, icons and headlines 24px and above.
-4. **`ember` is fill-only on light** (2.50:1 on white). It is the dark-mode accent.
+4. **`ember` is fill-only** (2.50:1 on white). It never carries text.
 5. **Machine colours never carry body copy on light.** They exist to make the product photography sit naturally in the palette and to colour technical diagrams.
 
 ### 2.5 Colour consistency lock
@@ -224,7 +213,7 @@ Machine nameplate. Orange plate, ink label.
 | focus-visible | `outline: 2px solid ink` · `outline-offset: 2px` (ink ring on orange gives 5.07:1) |
 | disabled | `bg: steel/35` · `color: graphite` · `cursor: not-allowed` · no hover |
 
-Dark mode: `bg: ember`, `color: ink`, focus ring `ink`.
+Inside a reversed `ink` panel: `bg: ember`, `color: ink`, focus ring `ink`. `ember` on `ink` is 7.62:1.
 
 ### 4.2 Button, secondary
 
@@ -308,32 +297,19 @@ Permanently greyscale. Third-party marks stay visually subordinate to Gohil's ow
 
 `height: 72px` · one line at desktop · `bg: transparent` over hero, transitioning to `mist/88` with `backdrop-filter: blur(12px)` after 80px of scroll. Blur is capped at 12px per the performance guardrail.
 
-### 4.10 Mobile action bar
+### 4.10 Page loader
 
-`height: 64px` plus `env(safe-area-inset-bottom)` · three equal targets, each 44px minimum · `bg: ink` · hairline top border · hidden while the menu is open.
+Covers the viewport on first load and on every route change. Built from the mark: the orange arc and the G swing into mesh while a dashed `steel` ring turns against them at a reduction.
 
-### 4.11 Brand assets
+**The hide is driven by a timer, not by the animation finishing.** An earlier version hung the unmount off the GSAP timeline's `onComplete`, and when the timeline did not start the loader sat at full opacity covering the entire site. A loader that can stick takes the whole page with it, so the timer is the authority and the animation is decoration.
 
-All generated from measured geometry by the scripts in `scripts/`, never traced by hand or by an auto-tracer. Re-run any script to regenerate.
+`1250ms` first load, `620ms` route change, `320ms` under reduced motion. It also performs the final scroll reset, because it is the last thing to finish on a navigation.
 
-| Asset | Source | Notes |
-|---|---|---|
-| `brand/g-mark.svg` | `build-mark.py` | The ring and G. 510 bytes. Verified at 98.6% pixel agreement against the artwork once JPEG edge smear is excluded. |
-| `brand/g-mark-mono.svg` | same | Single colour via `currentColor`, for reversals and the favicon. |
-| `brand/g-mark-outline.svg` | same | Stroke only. The load animation draws these three arcs with DrawSVG. |
-| `brand/wordmark-group.svg` | `build-lockup.py` | GROUP, five glyphs constructed from measured metrics. |
-| `brand/logo-lockup.svg` | same | Mark plus GROUP, positions carried from the artwork. |
-| `brand/qr-*.svg` | `build-qr.mjs` | Version 4, EC level M. Round-trip decoded to confirm payload. |
-| `products/*.png` | `build-products.py` | 21 transparent cut-outs, 101px to 222px. Native size is the 2x asset. |
-| `dealers/*.png` | `build-dealers.py` | 10 principal marks, cropped from image 1 only. |
+### 4.11 Hero ring
 
-**The mark's geometry.** One ring, centre fitted by least squares, outer radius 90, stroke 21.5, divided into exact quarters: orange 45deg to 225deg, pale 225deg to 270deg, the G 270deg to 360deg plus a crossbar on the horizontal diameter, and a 45deg gap at the upper right. The gap is where "Gohil's" sits in the print mark.
+The product sits inside a ring built from the mark's own geometry: the same 180 degree orange arc, the same `steel` segment, the same gap. It is not a generic circular photo frame, and it crops to the subject, which is the honest way to present photography at the resolution we have.
 
-**Two decisions worth recording.**
-
-1. **The web lockup is the mark plus GROUP, with no "Gohil's".** This is not a shortcut. It is the reduced lockup the client themselves use on their own Instagram posts, and at header size "Gohil's" would render around 10px and read as noise inside the ring. The full version stays a print asset.
-
-2. **Dealer logos need more than `grayscale(1)`.** Some principals' marks are pale (TGPL is pastel teal and pink) and desaturate almost to nothing on a `mist` ground. The tile filter is `grayscale(1) contrast(1.1) brightness(0.9)`, which keeps every mark legible while still holding them visually subordinate to Gohil's own. Verified across all ten.
+One slow idle rotation after the load sequence, `transform` only, disabled outright under reduced motion. It is the only continuous motion on the site.
 
 ---
 
@@ -395,7 +371,6 @@ Documented here, defined in `src/lib/constants.ts`, never inlined as arbitrary v
 0    seam layer
 10   page content
 40   header
-45   mobile action bar
 50   mobile menu overlay
 60   modal and toast
 ```
@@ -413,9 +388,8 @@ Depth comes from **layered flat planes and the seam passing behind content**, wh
 | 0 | Flat on the page ground, no border | Section backgrounds |
 | 1 | `1px solid steel/40` hairline | Chips, tables, panels |
 | 2 | White surface on `mist` ground, hairline, no shadow | Cards, form panels |
-| 3 | `0 1px 0 rgb(14 16 18 / 0.08), 0 8px 24px -12px rgb(14 16 18 / 0.22)` | **Header and mobile action bar only.** These are the only two shadowed elements on the site. |
+| 3 | `0 1px 0 rgb(14 16 18 / 0.08), 0 8px 24px -12px rgb(14 16 18 / 0.22)` | **The header, and nothing else.** It is the only shadowed element on the site. |
 
-Dark mode replaces surface lift with `surface` and `surface-2` values rather than shadow, since shadow is invisible on `ink`.
 
 ---
 
@@ -488,7 +462,7 @@ Every animation must be justifiable in one sentence. If it cannot be, it is cut.
 
 ### Do
 
-1. **Do put a phone number or WhatsApp button within thumb reach on every screen.** The sticky action bar is the highest-value element on the site.
+1. **Do keep a phone number and a WhatsApp button within reach on every page.** The header, the mobile menu, every closing CTA and the footer all carry them. The client asked for the sticky bar to be removed, so reach is carried by the page rather than by a fixed strip.
 2. **Do use the real cut-out product photography at its native size.** Roughly 22 images at 101px to 276px. They are real and they are the client's own.
 3. **Do set every number with a unit in mono.** Ratios, kW, HP, rpm, inches, feet.
 4. **Do label the dealer section exactly "Authorised Dealer".** The client's own wording. Never upgrade it.
@@ -523,7 +497,7 @@ Two of the skill's rules are overridden by explicit client requirements. Both ar
 
 | Skill rule | Deviation | Justification |
 |---|---|---|
-| Section 4.11 "Page Theme Lock: no section flips to inverted mode mid-page" | The home page has one to two `ink` sections punctuating a light page. | The client brief specifies it, and the client's own Instagram poster is a dark orange-on-ink layout. Inverted sections are on-brand here. Contrast parity is maintained in both directions and verified in section 2.3. |
+| Section 4.11 "Page Theme Lock: no section flips to inverted mode mid-page" | The home page and About each carry one `ink` panel inside an otherwise light page. | The client's own Instagram poster is an orange-on-ink layout, so an inverted panel is on-brand. Every ratio inside those panels is verified in section 2.3. Note this is now the ONLY inversion on the site: the dark theme was removed at the client's request, so light is not merely the default, it is the only mode. |
 | Section 4.8 "Even minimalist sites need real images. Do not fill the page with hand-rolled SVG" | The hero carries no photograph, and a hand-authored technical SVG carries one section. | Measured: the largest available product image is 251x276px. A photo-led site is not buildable from these assets, and stretching one produces the blurry-hero failure the brief explicitly warns against. Falls back to the skill's own priority 3, "leave clearly-labeled placeholder slots and tell the user". Real client photography is requested in `CONTENT.md` and is on the critical path. The SVG is technical and informational with real callouts, not decorative. |
 
 ---
@@ -556,7 +530,6 @@ Tested at: **320 · 360 · 390 · 414 · 768 · 1024 · 1440 · 1920 · 2560**, 
 | Product arrays | 2 columns at 360px, 3 at 768px, asymmetric at 1024px and up. |
 | Spec tables | Label above value, stacked, rather than a horizontally scrolling table. |
 | Dealer grid | 3 columns at 360px, 5 at 768px. |
-| Mobile action bar | Visible below `md`. Hidden above it. |
 | Gearbox SVG | Static exploded state, no scrub. |
 
 ### 9.3 Hard rules
@@ -565,7 +538,7 @@ Tested at: **320 · 360 · 390 · 414 · 768 · 1024 · 1440 · 1920 · 2560**, 
 - Minimum tap target 44x44px.
 - Minimum body text 16px.
 - Images carry explicit `width` and `height` and correct `sizes` to prevent CLS.
-- Safe area insets respected: `env(safe-area-inset-bottom)` on the action bar, `env(safe-area-inset-top)` on the menu overlay.
+- Safe area insets respected on the mobile menu overlay: `env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`.
 
 ---
 
@@ -581,7 +554,7 @@ All ratios in section 2.3 are computed, not eyeballed. Re-verified in Phase 9 ag
 
 - Every interactive element has a visible `focus-visible` state.
 - Removing the outline without a replacement is banned.
-- Focus ring: 2px, `orange` on light grounds, `ember` on dark, `ink` on orange fills. Always with `outline-offset` of at least 2px.
+- Focus ring: 2px, `orange` on light grounds, `ember` inside reversed `ink` panels, `ink` on orange fills. Always with `outline-offset` of at least 2px.
 
 ### 10.3 Keyboard
 
@@ -623,5 +596,5 @@ Before any component is considered done:
 - [ ] Zero em-dashes in any user-visible string
 - [ ] No string hardcoded in JSX
 - [ ] Renders correctly at 320px with no horizontal overflow
-- [ ] Renders correctly in dark mode
+- [ ] Renders correctly at 320px and at 200% browser zoom
 - [ ] Passes with `prefers-reduced-motion: reduce`

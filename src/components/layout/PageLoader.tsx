@@ -4,80 +4,90 @@
  * Global page loader.
  *
  * Built from the client's own mark rather than a generic spinner: the orange
- * arc draws itself, the G settles in, and a second ring meshes against it like
- * a gear pair. The whole thing is the reduction idea the site is built on,
- * played once.
+ * arc and the G swing into mesh while a dashed ring turns against them at a
+ * reduction. The idea the whole site is built on, played once.
  *
- * Timing is deliberate. It runs about 1.1s on first load and about 0.5s on a
- * route change, because a loader that outstays the content it is covering is
- * just a delay. It never blocks a second time on the same navigation, and it
- * collapses to a single fade under prefers-reduced-motion.
+ * The hide is driven by a timer, NOT by the animation's onComplete.
+ *
+ * That is deliberate and it is the important detail here. An earlier version
+ * hung the unmount off the GSAP timeline finishing, and when the timeline did
+ * not start for any reason the loader sat there at full opacity covering the
+ * entire site. A loader that can stick is worse than no loader at all, because
+ * it takes the whole page with it. So the timer is the authority and the
+ * animation is decoration: if GSAP never runs, the loader still leaves on
+ * schedule and the visitor sees the site.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { gsap, useGSAP, prefersReducedMotion } from '@/lib/gsap'
 import { MARK_PATHS, MARK_VIEWBOX } from '@/data/mark-paths'
 import { GROUP_GLYPHS, GROUP_ADVANCE, GROUP_VIEWBOX } from '@/data/wordmark-paths'
 import { Z } from '@/lib/constants'
+import { useSmoothScroll } from './SmoothScroll'
+
+/** First load gets the full sequence. A route change gets a brief cover. */
+const FIRST_MS = 1250
+const ROUTE_MS = 620
+const REDUCED_MS = 320
 
 export function PageLoader() {
   const pathname = usePathname()
   const root = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(true)
   const first = useRef(true)
+  const [visible, setVisible] = useState(true)
+  const [run, setRun] = useState(0)
+  const { scrollTo } = useSmoothScroll()
 
-  // Re-arm on every navigation.
+  const settle = useCallback(() => {
+    setVisible(false)
+    // The loader is the last thing to finish on a navigation, so resetting
+    // here removes the race with Lenis settling back behind the cover.
+    if (!window.location.hash) scrollTo(0, { immediate: true })
+  }, [scrollTo])
+
+  // Re-arm on navigation. `run` forces the effects to re-fire even if the
+  // pathname somehow repeats.
   useEffect(() => {
     if (first.current) return
     setVisible(true)
+    setRun((n) => n + 1)
   }, [pathname])
+
+  // The authority. Nothing about this depends on GSAP.
+  useEffect(() => {
+    if (!visible) return
+    const ms = prefersReducedMotion() ? REDUCED_MS : first.current ? FIRST_MS : ROUTE_MS
+    const t = window.setTimeout(settle, ms)
+    return () => window.clearTimeout(t)
+  }, [visible, run, settle])
 
   useGSAP(
     () => {
-      if (!visible) return
-      const el = root.current
-      if (!el) return
-
-      const reduced = prefersReducedMotion()
+      if (!visible || !root.current) return
       const initial = first.current
       first.current = false
+      if (prefersReducedMotion()) return
 
-      if (reduced) {
-        gsap.to(el, {
-          autoAlpha: 0,
-          duration: 0.2,
-          delay: 0.15,
-          onComplete: () => setVisible(false),
-        })
-        return
-      }
+      const dur = (initial ? FIRST_MS : ROUTE_MS) / 1000
 
-      const dur = initial ? 1 : 0.55
-      const tl = gsap.timeline({ onComplete: () => setVisible(false) })
-
-      tl.set('[data-loader-arc]', { rotate: -110, transformOrigin: '50% 50%', opacity: 0 })
+      gsap
+        .timeline()
+        .set('[data-loader-arc]', { rotate: -110, transformOrigin: '50% 50%', opacity: 0 })
         .set('[data-loader-g]', { rotate: 40, transformOrigin: '50% 50%', opacity: 0 })
         .set('[data-loader-mesh]', { rotate: 0, transformOrigin: '50% 50%', opacity: 0 })
         .set('[data-loader-glyph]', { opacity: 0, y: 10 })
-
-        // the two halves of the mark swing into mesh
-        .to('[data-loader-arc]', { rotate: 0, opacity: 1, duration: dur * 0.62, ease: 'power3.out' }, 0)
-        .to('[data-loader-g]', { rotate: 0, opacity: 1, duration: dur * 0.62, ease: 'power3.out' }, 0.04)
-        // the meshing ring turns the other way, at a reduction
-        .to(
-          '[data-loader-mesh]',
-          { rotate: 150, opacity: 1, duration: dur * 0.85, ease: 'power2.out' },
-          0,
-        )
+        .to('[data-loader-arc]', { rotate: 0, opacity: 1, duration: dur * 0.5, ease: 'power3.out' }, 0)
+        .to('[data-loader-g]', { rotate: 0, opacity: 1, duration: dur * 0.5, ease: 'power3.out' }, 0.04)
+        .to('[data-loader-mesh]', { rotate: 150, opacity: 1, duration: dur * 0.7, ease: 'power2.out' }, 0)
         .to(
           '[data-loader-glyph]',
-          { opacity: 1, y: 0, duration: dur * 0.3, ease: 'power2.out', stagger: dur * 0.05 },
-          dur * 0.38,
+          { opacity: 1, y: 0, duration: dur * 0.26, ease: 'power2.out', stagger: dur * 0.04 },
+          dur * 0.3,
         )
-        .to(el, { autoAlpha: 0, duration: 0.32, ease: 'power2.inOut' }, dur * 0.92)
+        .to(root.current, { autoAlpha: 0, duration: dur * 0.22, ease: 'power2.inOut' }, dur * 0.74)
     },
-    { scope: root, dependencies: [visible, pathname] },
+    { scope: root, dependencies: [visible, run] },
   )
 
   if (!visible) return null
