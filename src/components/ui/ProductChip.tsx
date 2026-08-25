@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/data/products'
 import { detailFor } from '@/data/product-details'
+import { productImageSrc } from '@/lib/product-images'
 
 /**
  * The unit that carries the product photography. DESIGN.md 4.5.
@@ -38,7 +39,7 @@ export function ProductChip({
       <div className="product-chip__frame">
         {product.image ? (
           <Image
-            src={`/products/${product.image}${wide ? '' : '@sm'}.webp`}
+            src={productImageSrc(product.image, wide)}
             alt={product.alt}
             width={660}
             height={450}
