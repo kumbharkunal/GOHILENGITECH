@@ -25,7 +25,7 @@ export function DealerWall({ className }: { className?: string }) {
               width={140}
               height={70}
               sizes="(max-width: 768px) 28vw, 140px"
-              className="dealer-mark h-auto w-full object-contain"
+              className="dealer-mark h-full w-full object-contain"
             />
           </Link>
         </li>

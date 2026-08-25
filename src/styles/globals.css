@@ -470,7 +470,7 @@
 /* Dealer marks. Slight opacity keeps third party trademarks visually
    subordinate to Gohil's own. Full colour logos expected in public/dealers/. */
 .dealer-mark {
-  opacity: 0.9;
+  opacity: 1;
   transition: opacity 200ms ease-out;
 }
 
@@ -733,12 +733,37 @@
   }
 }
 
+/* Every mark gets the same box, and is fitted inside it.
+
+   The marks come from ten different sources and have nothing in common
+   dimensionally: one is 420x81, another 330x321. Sizing them by width alone
+   made the square ones four times the visual weight of the wide ones and the
+   wall read as a mistake. A fixed box with object-contain normalises them
+   optically, which is the whole job of a logo wall.
+
+   min-height: 0 for the same reason as the product chip: without it a tall
+   mark sets the row height from its own content and the box stops meaning
+   anything. */
 .dealer-wall__cell {
   display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
-  min-height: 64px;
-  padding: 12px;
-  border-radius: var(--radius-sm);
+  min-height: 0;
+  height: 74px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .dealer-wall__cell {
+    height: 90px;
+    padding: 14px 18px;
+  }
 }
 
 /* ============================================================
