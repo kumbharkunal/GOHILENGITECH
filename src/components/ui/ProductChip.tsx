@@ -9,6 +9,12 @@ import { detailFor } from '@/data/product-details'
  * Every chip links to its own detail page unless `href` is set false, which is
  * how a chip already nested inside a link (a category card) opts out rather
  * than producing nested anchors.
+ *
+ * Two encodings exist for every photograph. A chip in a grid is around 260 CSS
+ * px, so it takes the 520px file; the handful of chips that run large take the
+ * full width one. A static export cannot resize on demand, so this choice is
+ * the only thing standing between a phone and a megabyte per image. See
+ * scripts/optimize-products.py.
  */
 
 export function ProductChip({
@@ -16,11 +22,14 @@ export function ProductChip({
   sizes = '(max-width: 768px) 45vw, 260px',
   priority = false,
   href = true,
+  wide = false,
 }: {
   product: Product
   sizes?: string
   priority?: boolean
   href?: boolean
+  /** Set where the chip renders larger than a grid cell, so it takes the full width file. */
+  wide?: boolean
 }) {
   const detail = detailFor(product.slug)
 
@@ -29,7 +38,7 @@ export function ProductChip({
       <div className="product-chip__frame">
         {product.image ? (
           <Image
-            src={`/products/${product.image}.webp`}
+            src={`/products/${product.image}${wide ? '' : '@sm'}.webp`}
             alt={product.alt}
             width={660}
             height={450}

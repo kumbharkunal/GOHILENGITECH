@@ -98,18 +98,27 @@ requirement from constraining the deploy runtime.
 npm run build                 # from the repo root
 cd scripts && npm install     # once
 npm run serve &               # serves ../out on :4321
-npm run qa
+npm run qa           # 21 checks against the home page
+npm run contrast     # colour and control names, one URL per template
 ```
 
-21 checks: Lighthouse across all four categories, `prefers-reduced-motion`
-genuinely emulated, a frame count on the hero under 4x CPU throttle, 200%
-zoom, landscape, and the mobile menu's keyboard contract.
+`qa.mjs` runs 21 checks: Lighthouse across all four categories,
+`prefers-reduced-motion` genuinely emulated, a frame count on the hero under 4x
+CPU throttle, 200% zoom, landscape, and the mobile menu's keyboard contract.
+
+`contrast.mjs` exists because `qa.mjs` only looks at the home page, and that is
+how a sitewide contrast failure stayed hidden. Three separate breakages, the
+seam over body copy, a `steel` heading on `/audit`, and white on a WhatsApp
+green that was never actually computed, were all invisible from `/`. It now
+walks fourteen URLs, one per template, and exits non-zero on any failure. Run
+it before every deploy.
 
 **Verified and stable**
 
 | | |
 |---|---|
-| Accessibility | 96, zero failing audits |
+| Accessibility | 100, zero failing audits |
+| Contrast, all 14 templates | clean |
 | Best practices | 96 |
 | SEO | 100 |
 | CLS | 0.000 |
@@ -122,15 +131,24 @@ zoom, landscape, and the mobile menu's keyboard contract.
 **Not trustworthy on a developer machine**
 
 Performance, LCP and TBT swing wildly run to run on an identical build:
-performance 63 to 97, LCP 1.82s to 4.52s, TBT 161ms to 880ms, depending only
-on what else the machine is doing. `qa.mjs` reports the median of three and
+performance 86 to 99 and LCP 2.0s to 3.6s within a single sitting, on the same
+build, depending only on what else the machine is doing. That is not a figure
+of speech. Halving the loader from 850ms to 300ms produced runs of 2.0s, 3.5s
+and 2.9s, which is the same distribution as leaving it alone, so the loader
+could not be blamed for it either. `qa.mjs` reports the median of three and
 prints the spread so the noise is visible rather than hidden.
 
-The direction is real even if the numbers are not. The site ships about 236 KB
-of gzipped JS on the home page, of which roughly 150 KB is the React and Next
-runtime and 54 KB is GSAP with ScrollTrigger, so the brief's 180 KB target was
-not reachable with the locked stack. The loader also costs LCP directly,
-because the hero cannot paint its largest element until the cover clears.
+The direction is real even if the numbers are not, and one large regression was
+real and is fixed. The generated product photography arrived at roughly 1.1 MB
+an image, eight of which load on the home page, which put 6.6 MB in front of a
+first visit and held LCP at 3.5s against an FCP of 0.8s. `npm run images` now
+encodes two widths per photograph and the whole directory went from 20.4 MB to
+2.9 MB, heaviest single image 1159 KB to 93 KB.
+
+What remains is structural. The site ships about 236 KB of gzipped JS on the
+home page, of which roughly 150 KB is the React and Next runtime and 54 KB is
+GSAP with ScrollTrigger, so the brief's 180 KB target was not reachable with
+the locked stack.
 
 **Measure it properly against the deployed site before quoting a number**, on
 throttled mobile:

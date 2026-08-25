@@ -1,0 +1,25 @@
+# Normalise text, and never touch binary assets.
+#
+# This repo is developed on Windows with core.autocrlf=true. Without the rules
+# below git decides text or binary by sniffing content, and anything it reads
+# as text gets line endings rewritten on checkout. For a .webp or a .woff2 that
+# is silent corruption: the file still has the right name and roughly the right
+# size, and it simply fails to decode.
+
+* text=auto eol=lf
+
+*.webp  binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.avif  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.pdf   binary
+
+# SVG and JSON are genuinely text and should stay normalised.
+*.svg   text eol=lf
+*.json  text eol=lf

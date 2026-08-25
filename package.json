@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "lock:linux": "docker run --rm -v \"${PWD}:/app\" -w /app node:22-bookworm-slim npm install --package-lock-only"
+    "lock:linux": "docker run --rm -v \"${PWD}:/app\" -w /app node:22-bookworm-slim npm install --package-lock-only",
+    "images": "python scripts/optimize-products.py",
+    "contrast": "node scripts/contrast.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

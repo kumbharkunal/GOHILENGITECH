@@ -45,6 +45,7 @@ export function ProductRange({
             <li key={p.slug} className={i === 0 ? 'range__lead' : undefined}>
               <ProductChip
                 product={p}
+                wide={i === 0}
                 sizes={
                   i === 0
                     ? '(max-width: 768px) 92vw, 420px'

@@ -24,10 +24,12 @@
  *
  * A section opts in with data-seam="0..1", where 0 is fully supply side and
  * 1 is fully build side. Sections without the attribute inherit the last value.
+ * How much orange "1" actually buys is decided by ceilingFor, which keeps the
+ * field clear of the text column at every viewport.
  */
 
 import { useRef } from 'react'
-import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion, isMobileViewport } from '@/lib/gsap'
+import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from '@/lib/gsap'
 import { Z } from '@/lib/constants'
 
 /** Where the seam rests before any section has claimed it. */
@@ -44,6 +46,36 @@ function spanFor(angleDeg: number): number {
   return (w * Math.abs(Math.sin(th)) + h * Math.abs(Math.cos(th))) / 2 + 40
 }
 
+/**
+ * How far the seam may advance at data-seam="1".
+ *
+ * This used to be a safety constraint and is now a composition one, and the
+ * difference is worth recording because the first version made the seam
+ * disappear entirely on a laptop.
+ *
+ * Readability is no longer this function's job. container-page paints the
+ * page ground and main sits above the seam, so the orange is occluded wherever
+ * there is a content column and cannot reach a paragraph however far it
+ * travels. What is left to decide is how much orange shows in the gutters,
+ * which is a question about how the page looks, not whether it can be read.
+ *
+ * So the field is allowed all the way to the viewport centre, as originally
+ * drawn. On a wide monitor the gutters are hundreds of pixels and the seam
+ * reads as a tall diagonal edge beside the content. On a narrow one they close
+ * up and the seam quietly becomes a corner. It occupies whatever room the
+ * layout leaves it, which is the right behaviour for a background device.
+ *
+ * The one thing it must not do is show as a sliver. Below the width where the
+ * gutter stops being a shape, the seam parks off canvas instead.
+ */
+function ceilingFor(): number {
+  if (typeof window === 'undefined') return 0
+  const probe = document.querySelector('.container-page')
+  const rect = probe?.getBoundingClientRect()
+  const gutter = rect && rect.width > 0 ? Math.min(rect.left, window.innerWidth - rect.right) : 0
+  return gutter < 40 ? Infinity : 0
+}
+
 export function SeamLayer() {
   const root = useRef<HTMLDivElement>(null)
   const field = useRef<HTMLDivElement>(null)
@@ -57,29 +89,19 @@ export function SeamLayer() {
         getComputedStyle(document.documentElement).getPropertyValue('--seam-angle'),
       ) || 38.1
 
-      const mobile = isMobileViewport()
-      const span = spanFor(angle)
-
       /**
        * Map a 0..1 seam value to a translation along the seam normal.
        *
        *   0  the seam sits just off the edge, no orange visible
-       *   1  the seam passes through the viewport centre, orange owns half
+       *   1  the orange has advanced as far as it may without touching text
        *
-       * The range deliberately stops at half. Content always sits on the page
-       * ground and never on the orange, so the orange grows and shrinks on the
-       * opposite side rather than sweeping across the text. Anything past 1
-       * would put type on a 3.15:1 ground.
-       *
-       * On mobile the ceiling is much tighter. At 0.62 the wedge reached up
-       * into the hero subline and Lighthouse caught graphite on orange at
-       * 1.53:1, which is the exact failure DESIGN.md 5.1 forbids. There is no
-       * safe width on a 390px screen where a diagonal can cross the text
-       * column and stay readable, so on mobile the seam stays a corner accent
-       * below the content rather than a field. DESIGN.md 9.2.
+       * See ceilingFor. The upper bound is computed, never guessed.
        */
       const toY = (v: number) => {
-        const ceiling = mobile ? span * 0.86 : 0
+        const span = spanFor(angle)
+        const ceiling = ceilingFor()
+        // Infinity means "no room for this effect here": park it fully clear.
+        if (!Number.isFinite(ceiling)) return span
         return gsap.utils.mapRange(0, 1, span, ceiling, gsap.utils.clamp(0, 1, v))
       }
 
@@ -100,7 +122,10 @@ export function SeamLayer() {
           end: 'top center',
           scrub: 0.5,
           refreshPriority: i,
-          animation: gsap.to(el, { y: toY(value), ease: 'none' }),
+          // The ceiling depends on viewport and container width, so the target
+          // has to be recomputed on refresh rather than captured once.
+          invalidateOnRefresh: true,
+          animation: gsap.to(el, { y: () => toY(value), ease: 'none' }),
         })
       })
     },

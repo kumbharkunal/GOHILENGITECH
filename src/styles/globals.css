@@ -28,8 +28,16 @@
   --color-machine-teal: #0e7c7b;
 
   /* ---- Functional ---- */
-  --color-whatsapp: #1fa855;
-  --color-whatsapp-hover: #1b8f49;
+  /* White on the lighter WhatsApp greens fails AA outright: their own brand
+     #25D366 is 1.98:1 and the #1FA855 originally specced here is 3.09:1, not
+     the 4.52 the spec claimed. Darkened until white actually passes at 4.52:1.
+     Still unmistakably WhatsApp, and now legible. */
+  /* Machine teal, darkened until it is legible as body text on the page
+     ground. The undarkened #0E7C7B is 4.20:1 and just misses. */
+  --color-verified: #0d7675;
+
+  --color-whatsapp: #198845;
+  --color-whatsapp-hover: #16783d;
   --color-danger: #b3261e;
 
   /* ---- Families. DESIGN.md 3.1 ---- */
@@ -209,11 +217,28 @@
    Utilities
    ============================================================ */
 
+/* The content column, and the only place sustained text is allowed to live.
+   It paints its own ground, which is not decoration: it is the guarantee that
+   no paragraph is ever composited over the seam.
+
+   Two independent mechanisms keep that true, and both are needed.
+
+   ceilingFor() in SeamLayer.tsx stops the orange reaching this column at all,
+   which is the fix that matters to a reader. But a checker cannot see it: the
+   seam field is a rotated square, and its bounding box therefore covers the
+   whole viewport no matter where the orange visually is. Walking the stack
+   under any transparent paragraph lands on orange and reports 1.53:1, which
+   is how this looked in the audit even after the geometry was correct.
+
+   Painting the ground here makes the guarantee legible to a machine as well
+   as to a person, and costs nothing: the orange is already excluded from this
+   box, so there is no pixel it can change. */
 @utility container-page {
   width: 100%;
   max-width: var(--container-page);
   margin-inline: auto;
   padding-inline: clamp(20px, 5vw, 64px);
+  background-color: var(--bg-page);
 }
 
 /* Vertical rhythm. DESIGN.md 5.3 */
@@ -428,15 +453,24 @@
 
 /* Reversed contexts (an ink section) force the light-on-dark treatment
    regardless of the page theme. */
+
+/* container-page paints the light ground so that no paragraph is ever
+   composited over the seam. Inside a reversed section that is exactly wrong:
+   it drops a mist panel into the middle of a dark footer and takes the
+   secondary text from steel-on-ink, which is comfortable, to steel-on-mist at
+   2.42:1, which is unreadable. This is the one exception, and it is keyed off
+   the marker those subtrees already carry rather than a per-component opt out. */
+.on-ink .container-page {
+  background-color: transparent;
+}
+
 .on-ink .mark__g    { fill: var(--color-mist); }
 .on-ink .mark__pale { fill: rgb(151 152 154 / 0.32); }
 
-/* Dealer marks. Permanent greyscale keeps third party trademarks visually
-   subordinate to Gohil's own. Plain grayscale(1) alone erases the paler
-   marks such as TGPL, so contrast and brightness are nudged. DESIGN.md 4.11 */
+/* Dealer marks. Slight opacity keeps third party trademarks visually
+   subordinate to Gohil's own. Full colour logos expected in public/dealers/. */
 .dealer-mark {
-  filter: grayscale(1) contrast(1.1) brightness(0.9);
-  opacity: 0.78;
+  opacity: 0.9;
   transition: opacity 200ms ease-out;
 }
 
@@ -473,9 +507,23 @@
   gap: 10px;
 }
 
+/* Holds a photograph at a fixed 4:3 whatever shape the photograph is.
+
+   min-height: 0 is the load bearing line. The frame is a flex item, and a
+   flex item's automatic minimum size refuses to go below its content, so a
+   portrait photograph simply overrode aspect-ratio and stretched its own
+   card. The planetary gearbox rendered 553px tall in a box specced at 205,
+   and three of the eight cards on /products were the wrong height.
+
+   The minmax(0, 1fr) tracks are the same guard one level down, for the image
+   as a grid item. They were not what fixed it, but they are what stops the
+   next tall asset from finding the same hole. */
 .product-chip__frame {
   display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
+  min-height: 0;
   aspect-ratio: 4 / 3;
   padding: 12px;
   border: 1px solid var(--line-hairline);
@@ -791,6 +839,40 @@
   .field-grid {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* ============================================================
+   Declared ground. DESIGN.md 5.1
+
+   The seam is a fixed, full viewport layer behind everything, so any block of
+   transparent text can drift onto the orange as the page scrolls. Tuning the
+   seam offset per section does not solve it: I got that wrong three times
+   before writing this, on the hero, on the audit table and on the product
+   spec tables.
+
+   So text-bearing blocks declare their own ground rather than inheriting
+   whatever is behind them. The seam then reads in the gutters, the margins
+   and behind imagery, which is where it was always meant to live, and no
+   amount of scrolling can put body copy on a 3.15:1 background.
+
+   Apply to any container holding sustained body text or a spec table.
+   ============================================================ */
+
+/* The same clamp as .product-chip__frame, for one off media boxes.
+   See the note there for why minmax(0, 1fr) is required. */
+@utility media-frame {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  min-height: 0;
+}
+
+/* Escape hatch for text that sits outside the content column. Rare by
+   design: prefer putting the text in a container-page, which already grounds
+   itself. */
+@utility on-ground {
+  background-color: var(--bg-page);
 }
 
 /* ============================================================

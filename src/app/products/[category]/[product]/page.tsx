@@ -98,7 +98,7 @@ export default async function ProductPage({
             {/* image */}
             <div>
               <div
-                className="grid aspect-[4/3] place-items-center rounded-md border bg-card p-8"
+                className="media-frame aspect-[4/3] rounded-md border bg-card p-8"
                 style={{ borderColor: 'var(--line-hairline)' }}
               >
                 {p.image ? (
@@ -119,7 +119,6 @@ export default async function ProductPage({
               </div>
             </div>
 
-            {/* copy and specs */}
             <div>
               {detail ? (
                 <p className="max-w-[58ch] text-body-l text-fg-muted">{detail.summary}</p>

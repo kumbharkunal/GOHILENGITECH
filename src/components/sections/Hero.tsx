@@ -111,7 +111,7 @@ export function Hero() {
               box covers the viewport even when the visible orange is a corner,
               and axe reads that box rather than the pixels. Verified by
               sampling: the rendered ground behind this text is mist. */}
-          <div className="max-w-[min(100%,60ch)] bg-page">
+          <div className="max-w-[min(100%,60ch)]">
             <p
               data-hero-fade
               className="mt-4 max-w-[52ch] text-body text-fg-muted md:mt-6 md:text-body-l"

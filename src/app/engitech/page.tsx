@@ -40,7 +40,7 @@ export default function EngitechPage() {
                 Photographs of the real machine are on the way from the workshop.
               </p>
             </div>
-            <ProductChip product={FLAGSHIP} sizes="(max-width: 768px) 92vw, 520px" />
+            <ProductChip product={FLAGSHIP} sizes="(max-width: 768px) 92vw, 520px" wide />
           </div>
         </Reveal>
       </section>

@@ -6,7 +6,15 @@ Every image the site can use, with the exact folder and filename for each, and a
 
 1. Paste a prompt into ChatGPT or any image model and generate.
 2. Save the result with **exactly** the filename given, in the folder given.
-3. `npm run build`.
+3. `npm run images` to web encode it. **Do not skip this.**
+4. `npm run build`.
+
+Step 3 is not optional tidying. Generated images arrive around 1.1 MB each, and
+eight of them appear on the home page. Shipped raw they put 6.6 MB in front of
+a first visit and pushed LCP from 0.8s to 3.5s, which on the mid range Android
+this site is built for is the difference between a phone call and a closed tab.
+`npm run images` writes two widths, a 1100px file for the detail page and a
+520px `@sm` file for the grid chips, and the code already asks for the right one.
 
 The code already points at these paths, so a correctly named file just appears on the site with no code change.
 
@@ -97,7 +105,7 @@ Two categories, different risk.
 
 ### Conveyors
 
-**`stacker-conveyor.webp`** — **highest value, this is their flagship**
+**`stacker-conveyor.webp`**, **highest value, this is their flagship**
 > A mobile orange painted stacker conveyor on rubber tyred wheels. A long inclined belt boom on a steel trestle frame angled upward at about 30 degrees, black rubber belt, an electric drive motor and gearbox at the base, adjustable support legs. Industrial, functional, workshop built rather than showroom finished.
 
 **`belt-conveyor.webp`**

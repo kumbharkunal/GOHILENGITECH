@@ -8,11 +8,20 @@ export const metadata: Metadata = {
 
 const ORDER: Status[] = ['confirm', 'inferred', 'verified', 'excluded']
 
+/**
+ * One hue per status, and every one of them legible as body text.
+ *
+ * These colour a count inside a running sentence as well as a heading, so the
+ * large text allowance does not apply and all four have to clear 4.5:1 on the
+ * page ground. The obvious picks do not: raw orange is 3.15:1, machine blue is
+ * 3.47:1, and steel, which this used for "excluded", is 2.42:1 and had no
+ * business being text at all. Measured against #EAEBED.
+ */
 const TONE: Record<Status, string> = {
-  confirm: 'var(--color-orange)',
-  inferred: 'var(--color-machine-blue)',
-  verified: 'var(--color-graphite)',
-  excluded: 'var(--color-steel)',
+  confirm: 'var(--color-orange-text)', // 4.52:1
+  inferred: 'var(--color-machine-blue-deep)', // 9.11:1
+  verified: 'var(--color-verified)', // 4.55:1
+  excluded: 'var(--color-graphite)', // 4.83:1
 }
 
 export default function AuditPage() {

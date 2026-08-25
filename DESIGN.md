@@ -126,12 +126,18 @@ Computed, not estimated. WCAG 2.1. AA body needs 4.5:1, AA large (18.66px bold o
 | `machine-teal` | 4.20:1 | AA large | Diagram accents only |
 | `machine-blue` | 3.47:1 | AA large | Diagram accents only |
 | `machine-blue-text` | **4.54:1** | AA body | Machine-blue text on light |
+| `verified` (teal, darkened) | **4.55:1** | AA body | The `/audit` verified status |
 | `steel` | **2.42:1** | **FAIL** | **Strokes and dividers only. Never text.** |
+| white on `whatsapp #198845` | **4.52:1** | AA body | The WhatsApp button label |
+| white on `whatsapp` as first specced `#1FA855` | **3.09:1** | **FAIL** | Shipped for a while. See 4.3. |
+| `steel` on `ink` | **6.60:1** | AA body | Secondary text inside an `on-ink` section |
 
 ### 2.4 Rules that fall out of the matrix
 
 1. **The primary CTA is orange fill with an ink label, never white.** White on orange is 3.76:1 and fails AA. Ink on orange is 5.07:1 and passes. It also reads like a machine nameplate, which is the correct register.
-2. **`steel` is a stroke token, never a text token.** At 2.42:1 on `mist` it fails outright. A component that sets text in `steel` is a bug. It is still used freely for hairlines, dividers and the dashed ring in the loader.
+2. **`steel` is a stroke token, never a text token on light.** At 2.42:1 on `mist` it fails outright. A component that sets text in `steel` on the page ground is a bug. It is still used freely for hairlines, dividers and the dashed ring in the loader, and it is a legitimate secondary text colour **inside an `on-ink` section**, where it measures 6.60:1. That exception is why the footer is correct and why `/audit` was not: the audit page set an `h2` in `steel` on the light ground and shipped at 2.42:1 until the sweep in `scripts/contrast.mjs` caught it.
+
+   This rule has now been broken twice by me, which means stating it is not enough. `npm run contrast` walks one URL per template and fails the build if any of them regress. Prefer that over discipline.
 3. **Small orange text uses `orange-text`, never `orange`.** `orange` is reserved for fills, borders, icons and headlines 24px and above.
 4. **`ember` is fill-only** (2.50:1 on white). It never carries text.
 5. **Machine colours never carry body copy on light.** They exist to make the product photography sit naturally in the palette and to colour technical diagrams.
@@ -227,12 +233,14 @@ Inside a reversed `ink` panel: `bg: ember`, `color: ink`, focus ring `ink`. `emb
 
 ### 4.3 Button, WhatsApp
 
-Deliberately distinct because it carries the entire conversion path. Uses WhatsApp's own green so it is instantly recognisable to an Indian B2B user.
+Deliberately distinct because it carries the entire conversion path. Recognisably WhatsApp green, but darkened until it is legible.
+
+**This spec was wrong once and it is worth recording why.** It originally called for `#1FA855`, claiming 4.52:1 with white. The real figure is **3.09:1**, which fails AA outright, and the button shipped that way on every page until Lighthouse caught it. WhatsApp's own brand green `#25D366` is worse still at 1.98:1. Do not lighten this token back toward the brand colour without recomputing: white text needs a much darker green than the brand palette provides.
 
 | State | Spec |
 |---|---|
-| default | `bg: #1FA855` · `color: #FFFFFF` (4.52:1, AA body) · `radius: --r-sm` · leading lucide `MessageCircle` icon at `1em` |
-| hover | `bg: #1B8F49` |
+| default | `bg: #198845` · `color: #FFFFFF` (4.52:1, AA body) · `radius: --r-sm` · leading lucide `MessageCircle` icon at `1em` |
+| hover | `bg: #16783D` |
 | active | `translateY(1px)` |
 | focus-visible | `outline: 2px solid ink` · `outline-offset: 2px` |
 | disabled | not applicable, this button is never disabled |
@@ -319,7 +327,22 @@ One slow idle rotation after the load sequence, `transform` only, disabled outri
 
 - 12 columns, `gap: 24px` desktop, `gap: 16px` mobile.
 - Container `max-width: 1280px`, gutter `clamp(20px, 5vw, 64px)`.
-- Content is **biased away from the seam**, not centred, so the seam always has room to read.
+- Content is centred, and the seam is kept out of it by the ground rule in 5.1a rather than by biasing the column. The plan called for a bias; the ground turned out to be the stronger guarantee, and it works at viewports a hand tuned bias would not have covered.
+
+### 5.1a The ground rule
+
+**Sustained text lives in a `container-page`, and `container-page` paints `--bg-page`.**
+
+This is the rule that keeps body copy off the orange, and it is worth saying why it is a paint rather than a piece of geometry.
+
+The seam is a rotated half plane behind the whole document. Keeping it away from text by tuning how far it travels is possible but not checkable: a contrast tool walks the stacking order under a paragraph, and the seam field's **bounding box covers the viewport whatever its rotation**, so every transparent paragraph on the site reported as graphite on orange at 1.53:1 even once the geometry was right. Painting the column states the ground as a fact instead of leaving it to be inferred.
+
+Two consequences, both intended:
+
+- `main` sits above the seam (`z-index` 10 against 0), so the column reliably occludes the orange. The seam therefore reads in the **gutters** rather than behind the text, growing on wide viewports where the gutters are wide and closing to a corner on narrow ones.
+- A container inside a reversed section must not repaint the light ground. `.on-ink .container-page` clears it. Any new dark section marked `on-ink` inherits that automatically.
+
+`on-ground` remains as an escape hatch for text that genuinely sits outside the column. It should stay rare.
 
 ### 5.2 The seam constant
 
