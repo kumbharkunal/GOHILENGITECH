@@ -33,15 +33,17 @@ export function Hero() {
       if (prefersReducedMotion()) return
       const mobile = isMobileViewport()
       const total = mobile ? DUR.loadMobile : DUR.load
-      // Starts after the loader has cleared, so the two do not overlap.
-      const start = 0.35
+      // Overlaps the tail of the loader rather than waiting for it. The
+      // headline is clipped until it rises, so it is not LCP eligible while it
+      // waits, and every millisecond of delay here lands on LCP.
+      const start = 0.12
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
       tl.fromTo(
         '[data-hero-line]',
         { yPercent: 108 },
-        { yPercent: 0, duration: total * 0.66, stagger: 0.09 },
+        { yPercent: 0, duration: total * 0.5, stagger: 0.07 },
         start,
       )
         .fromTo(
@@ -101,7 +103,15 @@ export function Hero() {
 
       <div className="mt-8 grid items-center gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
         <div>
-          <div className="max-w-[min(100%,60ch)]">
+          {/* The ground is declared, not inherited from behind the fixed seam
+              layer. Two reasons. It enforces DESIGN.md 5.1 structurally rather
+              than by tuning the seam offset per breakpoint, which I have now
+              got wrong twice. And it gives contrast tooling a real background
+              to measure: the seam field is a 300vmax rotated square, so its
+              box covers the viewport even when the visible orange is a corner,
+              and axe reads that box rather than the pixels. Verified by
+              sampling: the rendered ground behind this text is mist. */}
+          <div className="max-w-[min(100%,60ch)] bg-page">
             <p
               data-hero-fade
               className="mt-4 max-w-[52ch] text-body text-fg-muted md:mt-6 md:text-body-l"

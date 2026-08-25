@@ -71,10 +71,15 @@ export function SeamLayer() {
        * opposite side rather than sweeping across the text. Anything past 1
        * would put type on a 3.15:1 ground.
        *
-       * On mobile the ceiling drops again to a corner wedge. DESIGN.md 9.2.
+       * On mobile the ceiling is much tighter. At 0.62 the wedge reached up
+       * into the hero subline and Lighthouse caught graphite on orange at
+       * 1.53:1, which is the exact failure DESIGN.md 5.1 forbids. There is no
+       * safe width on a 390px screen where a diagonal can cross the text
+       * column and stay readable, so on mobile the seam stays a corner accent
+       * below the content rather than a field. DESIGN.md 9.2.
        */
       const toY = (v: number) => {
-        const ceiling = mobile ? span * 0.62 : 0
+        const ceiling = mobile ? span * 0.86 : 0
         return gsap.utils.mapRange(0, 1, span, ceiling, gsap.utils.clamp(0, 1, v))
       }
 

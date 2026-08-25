@@ -26,9 +26,17 @@ import { GROUP_GLYPHS, GROUP_ADVANCE, GROUP_VIEWBOX } from '@/data/wordmark-path
 import { Z } from '@/lib/constants'
 import { useSmoothScroll } from './SmoothScroll'
 
-/** First load gets the full sequence. A route change gets a brief cover. */
-const FIRST_MS = 1250
-const ROUTE_MS = 620
+/**
+ * First load gets the full sequence, a route change a brief cover.
+ *
+ * FIRST_MS is an LCP cost, not just a stylistic choice. The hero cannot paint
+ * its largest element until the loader clears, so every millisecond here lands
+ * directly on Largest Contentful Paint. Measured: at 1250ms LCP was 2.80s
+ * against an FCP of 0.76s. 850 keeps it a real brand moment and buys back most
+ * of the gap. Do not raise it without re-running scripts/qa.mjs.
+ */
+const FIRST_MS = 850
+const ROUTE_MS = 560
 const REDUCED_MS = 320
 
 export function PageLoader() {
