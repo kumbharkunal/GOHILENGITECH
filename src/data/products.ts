@@ -250,15 +250,6 @@ export const PRODUCTS: readonly Product[] = [
     confirmSide: true,
   },
 
-  {
-    slug: 'customized-gearbox-flange',
-    name: 'Customized Gearbox',
-    image: 'customized-gearbox-flange',
-    alt: 'Custom-engineered flange-mounted industrial gearbox',
-    side: 'build',
-    category: 'customized',
-  },
-
   // --- build: what they fabricate ---
   {
     slug: 'stacker-conveyor',
@@ -307,6 +298,14 @@ export const PRODUCTS: readonly Product[] = [
     alt: 'Vibro sifter separator with three orange clamped screen decks',
     side: 'build',
     category: 'vibro-sifters',
+  },
+  {
+    slug: 'customized-gearbox-flange',
+    name: 'Customized Gearbox',
+    image: 'customized-gearbox-flange',
+    alt: 'Custom-engineered flange-mounted industrial gearbox',
+    side: 'build',
+    category: 'customized',
   },
 ] as const
 
