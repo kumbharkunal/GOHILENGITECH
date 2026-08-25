@@ -148,6 +148,7 @@ at the cost of the seam appearing a beat late.
 - [ ] Client confirms every dealership listed is current. This is the only real legal exposure in the build.
 - [ ] Confirm Shop No. 5 or 5-6
 - [ ] Opening and closing times, so `openingHours` can go into the schema
-- [ ] Real photography for the five held slots (see `CONTENT.md` 10)
+- [ ] Real photography for the five held slots (see `CONTENT.md` 10 and `IMAGE-BRIEF.md`)
+- [ ] **Replace or delete `src/data/product-details.ts`.** It holds placeholder specifications for 20 products, added so the demo has something to show. Every entry is flagged `demo: true` and shows a visible notice on the page, but none of it is the client's data. Deleting that one file removes all of it.
 - [ ] Decide whether `/audit` and `/tokens` ship
 - [ ] Verify the `LocalBusiness` geo coordinates, currently Rajkot city centre rather than a precise pin

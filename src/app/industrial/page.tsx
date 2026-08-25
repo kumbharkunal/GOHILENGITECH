@@ -34,7 +34,7 @@ export default function IndustrialPage() {
               return (
                 <li key={c.slug}>
                   <Link href={`/products/${c.slug}`} className="block">
-                    {lead ? <ProductChip product={lead} /> : null}
+                    {lead ? <ProductChip product={lead} href={false} /> : null}
                     <h2 className="mt-3 text-h3">{c.name}</h2>
                     <p className="mt-1.5 text-caption text-fg-muted">{c.blurb}</p>
                   </Link>

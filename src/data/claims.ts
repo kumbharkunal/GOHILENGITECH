@@ -85,6 +85,14 @@ export const CLAIMS: readonly Claim[] = [
   { claim: 'Blowers and axial fans are supplied rather than built', where: 'Products', source: ['inferred'], status: 'confirm', note: 'Assigned to the supply side on the balance of evidence. Client to confirm which they manufacture.' },
   { claim: 'No prices anywhere', where: 'Global', source: ['indiamart', 'tradeindia'], status: 'excluded', note: 'Their own listings price the same cycloidal gearbox at Rs 5,000 and Rs 25,000. Price on request throughout.' },
 
+  {
+    claim: 'Product specifications on the detail pages',
+    where: '/products/[category]/[product]',
+    source: ['client-todo'],
+    status: 'confirm',
+    note: "PLACEHOLDER, and the only invented content on the site. Typical commercial figures for each category, added at the client's request so the demo has something to show. Not a statement of what Gohil stocks or builds. All of it lives in src/data/product-details.ts, is flagged demo:true, and renders behind a visible notice on the page. Replace with their own figures or delete the file before launch. The stacker conveyor is the exception: its Model G3, 33 feet, 2 HP and 24 inch belt come from their own Instagram post.",
+  },
+
   // --- industries ---
   { claim: 'Groundnut and cottonseed oil mills', where: 'Home, Industries', source: ['instagram', 'image-3'], status: 'verified', note: 'Their own posts show the stacker conveyor handling jute sacks in a godown, and they list oil mill machinery and spares.' },
   { claim: 'Pharmaceutical and food processing', where: 'Industries', source: ['image-3'], status: 'verified', note: 'They list Pharma Equipment themselves. Labelled "In our range", not as existing customers.' },
