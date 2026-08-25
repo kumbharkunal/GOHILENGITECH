@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 224.12" role="img" aria-label="Gohil's Group">
+  <path class="mark-pale" d="M36.36 163.64A90 90 0 0 0 100 190L100 168.5A68.5 68.5 0 0 1 51.563 148.437Z" fill="#D3D5D7"/>
+  <path class="mark-g" d="M100 89.25L189.356 89.25A90 90 0 0 1 100 190L100 168.5A68.5 68.5 0 0 0 167.651 110.75L100 110.75Z" fill="#646668"/>
+  <path class="mark-arc" d="M163.64 36.36A90 90 0 0 0 36.36 163.64L51.563 148.437A68.5 68.5 0 0 1 148.437 51.563Z" fill="#E8500C"/>
+  <path d="M13 0L99 0Q112 0 112 13L112 87Q112 100 99 100L13 100Q0 100 0 87L0 13Q0 0 13 0ZM25 25L112 25L112 44L50 44L50 63L88 63L88 75L25 75Z" fill="#646668" fill-rule="evenodd" transform="translate(42.72 204.03) scale(0.16089)"/>
+  <path d="M0 0L99 0Q112 0 112 13L112 49Q112 62 99 62L78 62L112 100L82 100L52 62L25 62L25 100L0 100ZM25 19L83 19L87 23L87 40L83 44L25 44Z" fill="#646668" fill-rule="evenodd" transform="translate(66.86 204.03) scale(0.16089)"/>
+  <path d="M13 0L99 0Q112 0 112 13L112 87Q112 100 99 100L13 100Q0 100 0 87L0 13Q0 0 13 0ZM29 25L83 25Q87 25 87 29L87 71Q87 75 83 75L29 75Q25 75 25 71L25 29Q25 25 29 25Z" fill="#646668" fill-rule="evenodd" transform="translate(90.99 204.03) scale(0.16089)"/>
+  <path d="M0 0L25 0L25 71Q25 75 29 75L83 75Q87 75 87 71L87 0L112 0L112 87Q112 100 99 100L13 100Q0 100 0 87Z" fill="#646668" fill-rule="evenodd" transform="translate(115.12 204.03) scale(0.16089)"/>
+  <path d="M0 0L99 0Q112 0 112 13L112 49Q112 62 99 62L25 62L25 100L0 100ZM25 19L83 19L87 23L87 40L83 44L25 44Z" fill="#646668" fill-rule="evenodd" transform="translate(139.26 204.03) scale(0.16089)"/>
+</svg>

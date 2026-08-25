@@ -1,0 +1,822 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Gohil's Group design tokens
+   Every value here traces to DESIGN.md. Do not add a value to
+   the codebase that is not defined in this file.
+   ============================================================ */
+
+@theme {
+  /* ---- Brand, sampled from client artwork. DESIGN.md 2.1 ---- */
+  --color-orange: #e8500c;
+  --color-orange-text: #bc410a;
+  --color-orange-hover: #d1480b;
+  --color-ember: #f8844c;
+  --color-graphite: #646668;
+  --color-steel: #97989a;
+  --color-mist: #eaebed;
+  --color-ink: #0e1012;
+
+  /* ---- Dark mode surfaces ---- */
+  --color-shell: #16191c;
+  --color-shell-2: #1e2226;
+
+  /* ---- Machine colours, sampled from the product photography ---- */
+  --color-machine-blue: #4080c0;
+  --color-machine-blue-text: #366da4;
+  --color-machine-blue-deep: #004068;
+  --color-machine-teal: #0e7c7b;
+
+  /* ---- Functional ---- */
+  --color-whatsapp: #1fa855;
+  --color-whatsapp-hover: #1b8f49;
+  --color-danger: #b3261e;
+
+  /* ---- Families. DESIGN.md 3.1 ---- */
+  --font-display: var(--font-anybody), "Arial Narrow", system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* ---- Type scale. DESIGN.md 3.2 ---- */
+  --text-display: clamp(2.5rem, 1.833rem + 2.963vw, 4.5rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 800;
+
+  --text-h1: clamp(2.125rem, 1.667rem + 2.037vw, 3.5rem);
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h1--font-weight: 750;
+
+  --text-h2: clamp(1.625rem, 1.417rem + 0.926vw, 2.25rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 700;
+
+  --text-h3: clamp(1.25rem, 1.167rem + 0.37vw, 1.5rem);
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.005em;
+  --text-h3--font-weight: 600;
+
+  --text-body-l: clamp(1.125rem, 1.083rem + 0.185vw, 1.25rem);
+  --text-body-l--line-height: 1.55;
+
+  --text-body: clamp(1rem, 0.979rem + 0.093vw, 1.0625rem);
+  --text-body--line-height: 1.6;
+
+  --text-caption: clamp(0.8125rem, 0.792rem + 0.093vw, 0.875rem);
+  --text-caption--line-height: 1.45;
+  --text-caption--letter-spacing: 0.01em;
+  --text-caption--font-weight: 500;
+
+  --text-data: clamp(0.875rem, 0.854rem + 0.093vw, 0.9375rem);
+  --text-data--line-height: 1.5;
+  --text-data--letter-spacing: 0.01em;
+
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.35;
+  --text-micro--letter-spacing: 0.06em;
+  --text-micro--font-weight: 500;
+
+  /* ---- Radius. DESIGN.md 5.4. Ceiling is 8px. ---- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* ---- Container ---- */
+  --container-page: 1280px;
+
+  /* ---- Motion. DESIGN.md 7.2 ---- */
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============================================================
+   Semantic roles. These flip by mode. DESIGN.md 2.2
+   Exposed as utilities through @theme inline so bg-page,
+   text-fg, border-line resolve per theme.
+   ============================================================ */
+
+@theme inline {
+  --color-page: var(--bg-page);
+  --color-card: var(--bg-card);
+  --color-inverted: var(--bg-inverted);
+  --color-fg: var(--fg-primary);
+  --color-fg-muted: var(--fg-secondary);
+  --color-fg-accent: var(--fg-accent);
+  --color-fg-inverted: var(--fg-inverted);
+  --color-line: var(--line-hairline);
+  --color-line-strong: var(--line-strong);
+  --color-ring: var(--ring-focus);
+}
+
+:root {
+  /* Light only. The client asked for a light theme, so there is no dark
+     variant to keep in parity. Removing it also removes a whole class of
+     contrast bugs: every ratio in DESIGN.md 2.3 is now the only one that
+     applies. */
+  --bg-page: var(--color-mist);
+  --bg-card: #ffffff;
+  --bg-inverted: var(--color-ink);
+  --fg-primary: var(--color-ink);
+  --fg-secondary: var(--color-graphite);
+  --fg-accent: var(--color-orange-text);
+  --fg-inverted: var(--color-mist);
+  --line-hairline: rgb(151 152 154 / 0.45);
+  --line-strong: var(--color-graphite);
+  --ring-focus: var(--color-orange);
+
+  /* The mark. The G is graphite on light, mist on dark. Orange never flips. */
+  --mark-g: var(--color-graphite);
+  --mark-pale: #d3d5d7;
+
+  /* The seam. Measured from image 2: slope 0.784. DESIGN.md 5.2 */
+  --seam-angle: 38.1deg;
+  --seam-offset: 0px;
+
+  /* Z-index scale. DESIGN.md 5.6. Never inline an arbitrary z value. */
+  --z-seam: 0;
+  --z-content: 10;
+  --z-header: 40;
+  --z-actionbar: 45;
+  --z-menu: 50;
+  --z-modal: 60;
+
+  color-scheme: light;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: auto; /* Lenis owns smoothing. Never both. */
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--fg-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    /* Anybody is a variable font. Wide setting echoes the client wordmark. */
+    font-variation-settings: "wdth" 130;
+  }
+
+  h1 {
+    font-variation-settings: "wdth" 130;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-sans);
+  }
+
+  /* DESIGN.md 10.2. Never remove an outline without a replacement. */
+  :focus-visible {
+    outline: 2px solid var(--ring-focus);
+    outline-offset: 2px;
+  }
+
+  /* Wide content scrolls inside its own container, never the body.
+     DESIGN.md 9.3 */
+  table,
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 64px);
+}
+
+/* Vertical rhythm. DESIGN.md 5.3 */
+@utility section-y {
+  padding-block: clamp(64px, 9vw, 128px);
+}
+
+/* ============================================================
+   The seam. DESIGN.md 1.3 and 5.2.
+   Rotated once, translated on one axis. Compositor only.
+   ============================================================ */
+
+.seam__pivot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(calc(-1 * var(--seam-angle)));
+  transform-origin: 0 0;
+}
+
+.seam__field {
+  position: absolute;
+  left: -150vmax;
+  top: 0;
+  width: 300vmax;
+  height: 300vmax;
+  background-color: var(--color-orange);
+  will-change: transform;
+}
+
+/* Dark mode keeps the same orange. It is the paint on their steel, not a
+   surface colour, so it does not flip with the theme. */
+
+/* ============================================================
+   Header. DESIGN.md 4.9 and 6.
+   The only shadowed element on the site.
+   ============================================================ */
+
+.header__bar {
+  background-color: transparent;
+  transition: background-color 250ms ease-out, box-shadow 250ms ease-out;
+  will-change: transform;
+}
+
+/* While the menu is open the bar sits above the overlay, so it must not
+   paint its own background over it. */
+.header__bar[data-over-menu='true'],
+.header[data-solid='true'] .header__bar[data-over-menu='true'] {
+  background-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.header[data-solid='true'] .header__bar {
+  background-color: color-mix(in srgb, var(--bg-page) 88%, transparent);
+  /* Capped at 12px. Anything heavier costs real frames on a mid range
+     Android, and this sits over a scrolling page. */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 1px 0 rgb(14 16 18 / 0.08),
+    0 8px 24px -12px rgb(14 16 18 / 0.22);
+}
+
+/* ============================================================
+   Mobile menu wipe. Same construction as the seam: one rotation
+   on the pivot, one translation on the panel inside it.
+   ============================================================ */
+
+.menu__clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.menu__pivot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(calc(-1 * var(--seam-angle)));
+}
+
+.menu__wipe {
+  position: absolute;
+  left: -150vmax;
+  top: -150vmax;
+  width: 300vmax;
+  height: 300vmax;
+  background-color: var(--color-ink);
+  will-change: transform;
+}
+
+/* ============================================================
+   Hero visual. The ring is the mark's own geometry at hero scale.
+   ============================================================ */
+
+.hero-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+  aspect-ratio: 1;
+}
+
+.hero-visual__ring,
+.hero-visual__disc,
+.hero-visual__product {
+  grid-area: 1 / 1;
+}
+
+.hero-visual__ring {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+/* The plate the product sits on. Keeps the photograph off the seam. */
+.hero-visual__disc {
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  box-shadow: 0 18px 44px -28px rgb(14 16 18 / 0.4);
+}
+
+.hero-visual__product {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 58%;
+  height: 58%;
+}
+
+.hero-visual__dots {
+  position: absolute;
+  /* Top right, where the page ground is. Bottom right is where the seam
+     arrives, and steel dots on orange are unreadable. */
+  right: -4px;
+  top: 2%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 9px;
+  pointer-events: none;
+}
+
+.hero-visual__dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-steel);
+  opacity: 0.75;
+}
+
+@media (max-width: 1023px) {
+  .hero-visual {
+    max-width: 340px;
+  }
+  .hero-visual__dots {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual__ring {
+    will-change: auto;
+  }
+}
+
+/* ============================================================
+   Global page loader. Built from the client's own mark.
+   ============================================================ */
+
+.page-loader {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background-color: var(--bg-page);
+}
+
+.page-loader__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+.page-loader__mark {
+  width: clamp(84px, 14vw, 124px);
+  height: auto;
+}
+
+.page-loader__word {
+  width: clamp(112px, 18vw, 168px);
+  height: auto;
+}
+
+/* ============================================================
+   The mark. DESIGN.md 4.11
+   ============================================================ */
+
+.mark__pale { fill: var(--mark-pale); }
+.mark__g    { fill: var(--mark-g); }
+.mark__arc  { fill: var(--color-orange); }
+
+/* Reversed contexts (an ink section) force the light-on-dark treatment
+   regardless of the page theme. */
+.on-ink .mark__g    { fill: var(--color-mist); }
+.on-ink .mark__pale { fill: rgb(151 152 154 / 0.32); }
+
+/* Dealer marks. Permanent greyscale keeps third party trademarks visually
+   subordinate to Gohil's own. Plain grayscale(1) alone erases the paler
+   marks such as TGPL, so contrast and brightness are nudged. DESIGN.md 4.11 */
+.dealer-mark {
+  filter: grayscale(1) contrast(1.1) brightness(0.9);
+  opacity: 0.78;
+  transition: opacity 200ms ease-out;
+}
+
+@media (hover: hover) {
+  a:hover > .dealer-mark { opacity: 1; }
+}
+
+/* ============================================================
+   Capability strip. DESIGN.md 7.2. One marquee per page.
+   ============================================================ */
+
+.marquee {
+  overflow: hidden;
+}
+
+/* The bullet sits AFTER each item, which is the client's own device from
+   their artwork, not the usual separator between items. */
+.marquee__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-orange);
+  flex: none;
+}
+
+/* ============================================================
+   Product chip. DESIGN.md 4.5
+   ============================================================ */
+
+.product-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-chip__frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  padding: 12px;
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+  transition:
+    border-color 250ms var(--ease-out-quart),
+    transform 250ms var(--ease-out-quart);
+}
+
+.product-chip__name {
+  font-size: var(--text-caption);
+  line-height: 1.35;
+  color: var(--fg-secondary);
+}
+
+.product-chip__pending {
+  color: var(--fg-secondary);
+  opacity: 0.7;
+}
+
+/* Spec sheet treatment, for the one product with real published figures and
+   no photograph. A spec table is the document the buyer already reads. */
+.product-chip__specs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  align-self: stretch;
+  padding: 4px 6px;
+}
+
+.product-chip__specs > div {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 9px;
+  border-bottom: 1px solid var(--line-hairline);
+}
+
+/* One border per row, never top and bottom. DESIGN.md 4.6 */
+.product-chip__specs > div:last-child {
+  border-bottom: 0;
+}
+
+.product-chip__specs dt {
+  font-size: var(--text-caption);
+  color: var(--fg-secondary);
+}
+
+.product-chip__specs dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-data);
+  color: var(--fg);
+}
+
+/* Label above value on a narrow screen, rather than two cramped columns that
+   wrap mid value. DESIGN.md 9.2 */
+@media (max-width: 767px) {
+  .product-chip__specs > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    padding-block: 7px;
+  }
+}
+
+/* Touch devices get no hover state at all. */
+@media (hover: hover) {
+  a:hover .product-chip__frame,
+  .product-chip:hover .product-chip__frame {
+    border-color: var(--color-orange);
+    transform: scale(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-chip__frame {
+    transition: border-color 150ms linear;
+  }
+  a:hover .product-chip__frame,
+  .product-chip:hover .product-chip__frame {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Divisions. DESIGN.md 5.5 family A.
+   Colour and verb carry the split. No diagonal: see DESIGN.md 8.
+   ============================================================ */
+
+.divisions {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .divisions {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+}
+
+.divisions__card {
+  padding: 26px 24px 24px;
+  border: 1px solid var(--line-hairline);
+  border-top-width: 3px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+}
+
+.divisions__card[data-side='build'] {
+  border-top-color: var(--color-orange);
+}
+
+.divisions__card[data-side='supply'] {
+  border-top-color: var(--color-machine-blue);
+}
+
+.divisions__verb {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 125;
+  font-weight: 700;
+  font-size: var(--text-h3);
+  line-height: 1;
+}
+
+.divisions__card[data-side='build'] .divisions__verb {
+  color: var(--fg-accent);
+}
+
+.divisions__card[data-side='supply'] .divisions__verb {
+  color: var(--color-machine-blue-text);
+}
+
+.divisions__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 22px;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--fg-accent);
+  text-underline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .divisions__link:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ============================================================
+   Product range. DESIGN.md 5.5 family C.
+   Asymmetric: the lead item takes a wider cell. A row of equal
+   cards is banned, and would waste the only photography we have.
+   ============================================================ */
+
+.range {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .range {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .range__lead {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .range__lead .product-chip {
+    height: 100%;
+  }
+
+  .range__lead .product-chip__frame {
+    aspect-ratio: auto;
+    height: 100%;
+  }
+}
+
+/* ============================================================
+   Dealer wall. DESIGN.md 4.8. Logo only, no labels.
+   ============================================================ */
+
+.dealer-wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 14px;
+  list-style: none;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .dealer-wall {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 26px 22px;
+  }
+}
+
+.dealer-wall__cell {
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   Form controls. DESIGN.md 4.4. All five states.
+   ============================================================ */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-block: 18px;
+}
+
+.field label,
+.field legend {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--fg);
+  padding: 0;
+}
+
+/* Labels are always visible, never placeholder only. DESIGN.md 4.4 */
+.field__hint {
+  color: var(--fg-secondary);
+  font-weight: 400;
+}
+
+.field input[type='text'],
+.field input[type='tel'],
+.field input[type='email'],
+.field input[type='date'],
+.field select,
+.field textarea {
+  width: 100%;
+  /* 16px floor prevents iOS zoom on focus. DESIGN.md 9.3 */
+  font-size: max(16px, var(--text-body));
+  font-family: inherit;
+  color: var(--fg);
+  background-color: var(--bg-card);
+  border: 1px solid rgb(151 152 154 / 0.6);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  transition: border-color 160ms ease-out;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  /* graphite, 4.83:1. Never steel, which fails. DESIGN.md 4.4 */
+  color: var(--fg-secondary);
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .field input:hover,
+  .field select:hover {
+    border-color: var(--line-strong);
+  }
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--color-orange);
+  outline: 2px solid rgb(232 80 12 / 0.35);
+  outline-offset: 0;
+}
+
+.field input:disabled,
+.field select:disabled {
+  background-color: var(--bg-page);
+  color: var(--fg-secondary);
+  border-color: rgb(151 152 154 / 0.35);
+  cursor: not-allowed;
+}
+
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.field__error {
+  font-size: var(--text-caption);
+  color: var(--color-danger);
+}
+
+.field input[type='radio'] {
+  accent-color: var(--color-orange);
+  width: 18px;
+  height: 18px;
+}
+
+.field-grid {
+  display: grid;
+  gap: 0 20px;
+}
+
+@media (min-width: 640px) {
+  .field-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================================
+   Section marker. DESIGN.md 4.7. Budget: 3 per page.
+   ============================================================ */
+
+.marker {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--fg-accent);
+}
+
+/* ============================================================
+   Reduced motion. DESIGN.md 10.4
+   A fully functional, fully readable, non animated site.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

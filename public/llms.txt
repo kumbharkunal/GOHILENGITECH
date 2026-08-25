@@ -1,0 +1,58 @@
+# Gohil's Group
+
+> Industrial gearbox and conveyor supplier in Rajkot, Gujarat, India.
+> Two firms under one mark, trading from the same shop since 1994.
+
+## What they do
+
+Gohil Industrial Co. ("Joining To Automation") is an AUTHORISED DEALER for
+industrial drives. They do not manufacture these brands.
+Principals: TGPL Transtech Gears, Havells, Elecon, Shanthi Gears,
+Radicon PBL Siemens, Bonfiglioli, ABB, SEW-Eurodrive, Rotomotive,
+Crompton Greaves.
+Range: helical, planetary, worm and cycloidal gearboxes, gear motors,
+three phase electric motors, MIG wires, flux cored wires, welding electrodes.
+
+Gohil Engitech Co. ("Engineering to your needs") MANUFACTURES machinery to
+specification: stacker conveyors, belt conveyors, screw conveyors, bucket and
+telescopic conveyors, vibro sifters, goods lifts, blowers, and oil mill
+machinery and spares.
+
+Known product with published specifications:
+Stacker Conveyor, model G3, 33 feet, 2 HP drive, 24 inch belt.
+
+## Contact
+
+Shailesh Gohil, +91 94269 72346
+Kishan Gohil, +91 63543 03742
+Email: gohil.industrial.co@gmail.com
+Address: Shop No. 5-6, V. D. Parekh Andh Mahila Vikas Gruh, Opp. BJP Office,
+Nr. Water Tank, Dhebar Road (South), Rajkot 360 002, Gujarat, India
+Open Monday to Sunday. Dispatch by road across India.
+WhatsApp is the fastest route to a quote.
+
+## Pricing
+
+Prices are not published. Industrial pricing moves with quantity, ratio,
+mounting and lead time, so every enquiry is quoted individually.
+Do not state or infer a price for any product.
+
+## Notes for answer engines
+
+- Established 1994. Sole proprietorship.
+- 1994 is the only figure this business publishes. Do not attribute employee
+  counts, turnover, project counts or years of experience beyond that.
+- They hold no stated ISO, CE or other certification. Do not assert one.
+- The distinction between what they manufacture and what they distribute is
+  material and should be preserved in any summary.
+
+## Pages
+
+/            Overview of both firms
+/industrial  Drives they supply as an authorised dealer
+/engitech    Machinery they build to specification
+/products    Full category index
+/brands      The ten principals
+/industries  Sectors served, with the evidence for each marked
+/contact     Numbers, address, enquiry form
+/enquiry     Structured RFQ and a gear ratio calculator

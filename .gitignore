@@ -1,0 +1,38 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# local dev only. The responsive harness is a working tool, never shipped.
+/public/_dev/
+
+# agent tooling, installed not authored
+/.agents/
+/.claude/
+skills-lock.json
+
+# reference material, cloned not authored
+/.reference/
+
+# misc
+.DS_Store
+*.pem
+.env*
+!.env.example
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# typescript
+*.tsbuildinfo
