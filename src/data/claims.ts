@@ -64,7 +64,7 @@ export const CLAIMS: readonly Claim[] = [
   { claim: 'Shailesh Gohil, +91 94269 72346', where: 'Global', source: ['image-1', 'image-3', 'instagram'], status: 'verified' },
   { claim: 'Kishan Gohil, +91 63543 03742', where: 'Global', source: ['image-1', 'image-3', 'instagram'], status: 'verified' },
   { claim: 'Email gohil.industrial.co@gmail.com', where: 'Global', source: ['image-2'], status: 'verified' },
-  { claim: 'Instagram gohil_industrial_co_', where: 'Contact', source: ['image-2'], status: 'verified', note: 'Decoded from the QR code in image 2, which routed through a vqr.vc shortener. Our QR points at the destination directly.' },
+  { claim: 'Instagram gohil_industrial_co_', where: 'Contact', source: ['image-2'], status: 'verified', note: 'Decoded from the QR code in image 2, which routed through a vqr.vc shortener. The contact page now links to the account directly rather than reprinting a QR, which cannot be used from the phone the page is open on.' },
   { claim: 'Shop No. 5-6, V. D. Parekh Andh Mahila Vikas Gruh, Opp. BJP Office, Nr. Water Tank, Dhebar Road (South), Rajkot 360 002', where: 'Global', source: ['image-1', 'image-3', 'tradeindia'], status: 'confirm', note: 'One address, three partial renderings. TradeIndia carries both landmarks in one string, which proves they are the same place. Only Shop No. 5 versus 5-6 is genuinely open.' },
   { claim: 'Working days Monday to Sunday', where: 'About, Contact, Footer', source: ['tradeindia'], status: 'verified' },
   { claim: 'Opening and closing times', where: 'Not shown', source: ['client-todo'], status: 'confirm', note: 'Unknown. LocalBusiness openingHours stays out of the schema until answered.' },

@@ -249,6 +249,14 @@ export const PRODUCTS: readonly Product[] = [
     category: 'blowers',
     confirmSide: true,
   },
+  {
+    slug: 'welding-consumables',
+    name: 'Welding Consumables',
+    image: 'welding-consumables',
+    alt: 'Spools of MIG welding wire and packs of welding electrodes',
+    side: 'supply',
+    category: 'welding-consumables',
+  },
 
   // --- build: what they fabricate ---
   {
@@ -306,6 +314,22 @@ export const PRODUCTS: readonly Product[] = [
     alt: 'Custom-engineered flange-mounted industrial gearbox',
     side: 'build',
     category: 'customized',
+  },
+  {
+    slug: 'goods-lift',
+    name: 'Goods Lift',
+    image: 'goods-lift',
+    alt: 'Industrial goods lift platform with steel guide rails',
+    side: 'build',
+    category: 'goods-lifts',
+  },
+  {
+    slug: 'oil-mill-machinery',
+    name: 'Oil Mill Machinery',
+    image: 'oil-mill-machinery',
+    alt: 'Oil mill expeller screw press for groundnut and cottonseed',
+    side: 'build',
+    category: 'oil-mill-machinery',
   },
 ] as const
 

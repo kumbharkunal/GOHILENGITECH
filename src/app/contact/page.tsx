@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 import { COMPANY, PEOPLE } from '@/data/company'
 import { GENERAL_FAQ } from '@/data/faq'
@@ -7,6 +6,8 @@ import { whatsappGeneral, telUrl } from '@/lib/whatsapp'
 import { PageHeader } from '@/components/sections/PageHeader'
 import { EnquiryForm } from '@/components/sections/EnquiryFormLazy'
 import { Reveal } from '@/components/ui/Reveal'
+import { SocialLinks } from '@/components/ui/SocialLinks'
+import { LazyMap } from '@/components/ui/LazyMap'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -90,24 +91,21 @@ export default function ContactPage() {
                   {hours.days}
                   {hours.times ? `, ${hours.times}` : ''}
                 </p>
+                <LazyMap className="mt-5" />
               </div>
 
+              {/* A QR code stood here. It only works from a second device, so
+                  on the phone most of this traffic arrives on it was a dead
+                  end. Tappable links to the same accounts do the same job. */}
               <div
-                className="flex items-center gap-5 rounded-md border bg-card p-5"
+                className="rounded-md border bg-card p-5"
                 style={{ borderColor: 'var(--line-hairline)' }}
               >
-                {/* Our own QR, pointing straight at the destination rather than
-                    through the third party shortener on their printed panel. */}
-                <Image
-                  src="/brand/qr-instagram.svg"
-                  alt="QR code linking to the Gohil Industrial Co. Instagram account"
-                  width={96}
-                  height={96}
-                  className="size-24 shrink-0 text-fg"
-                />
-                <p className="text-caption text-fg-muted">
-                  Scan for our Instagram, where we post new machinery.
+                <h2 className="text-h3">Follow the shop</h2>
+                <p className="mt-1.5 text-caption text-fg-muted">
+                  We post new machinery as it leaves the floor.
                 </p>
+                <SocialLinks className="mt-4" />
               </div>
             </div>
           </div>
