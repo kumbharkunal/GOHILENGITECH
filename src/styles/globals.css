@@ -719,17 +719,24 @@
    ============================================================ */
 
 .dealer-wall {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 18px 14px;
   list-style: none;
   padding: 0;
 }
 
+.dealer-wall > li {
+  flex: 0 0 calc((100% - 28px) / 3); /* 3 cols, 2 gaps of 14px */
+}
+
 @media (min-width: 768px) {
   .dealer-wall {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 26px 22px;
+  }
+  .dealer-wall > li {
+    flex: 0 0 calc((100% - 88px) / 5); /* 5 cols, 4 gaps of 22px */
   }
 }
 
