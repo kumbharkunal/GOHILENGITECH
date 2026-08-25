@@ -332,7 +332,9 @@
   top: -150vmax;
   width: 300vmax;
   height: 300vmax;
-  background-color: var(--color-ink);
+  /* Card white rather than ink. The panel reads as a clean light sheet against
+     the mist page ground, and the diagonal edge still registers on the way in. */
+  background-color: var(--bg-card);
   will-change: transform;
 }
 
@@ -340,20 +342,169 @@
    Hero visual. The ring is the mark's own geometry at hero scale.
    ============================================================ */
 
+/* ============================================================
+   Hero shell.
+
+   svh, not dvh. dvh grows and shrinks as mobile browser chrome hides on
+   scroll, which resizes the hero underneath the reader mid gesture. svh is
+   the smallest stable height, so laying out against it is what guarantees
+   the visual is never cut off on a phone.
+
+   The internal gaps are vh relative for the same reason: on a short viewport
+   they close up before anything is forced off screen.
+   ============================================================ */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100svh - 72px);
+  padding-block: clamp(20px, 4vh, 64px);
+}
+
+.hero__body {
+  display: grid;
+  align-items: center;
+  gap: clamp(20px, 4vh, 40px);
+  margin-top: clamp(16px, 3vh, 32px);
+}
+
+@media (min-width: 1024px) {
+  .hero__body {
+    grid-template-columns: 1fr 0.9fr;
+    gap: 56px;
+  }
+}
+
+.hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: clamp(16px, 3vh, 36px);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background-color 200ms ease-out,
+    border-color 200ms ease-out,
+    transform 200ms var(--ease-out-quart);
+}
+
+.hero-cta--ghost {
+  border: 1px solid var(--line-strong);
+}
+
+/* Touch devices get no hover state; a lift that fires on tap reads as lag. */
+@media (hover: hover) {
+  .hero-cta:hover {
+    transform: translateY(-2px);
+  }
+  .hero-cta--ghost:hover {
+    border-color: var(--fg-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta,
+  .hero-cta:hover {
+    transform: none;
+    transition: background-color 150ms linear, border-color 150ms linear;
+  }
+}
+
+/* Below 400px the two buttons cannot both keep their label on one line, so
+   they stack rather than shrinking the tap target. */
+@media (max-width: 399px) {
+  .hero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ============================================================
+   Scroll cue. A rail with one dot falling through it.
+   ============================================================ */
+
+.hero__cue {
+  position: absolute;
+  bottom: clamp(8px, 2vh, 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.hero__cue-rail {
+  display: block;
+  width: 24px;
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  position: relative;
+}
+
+.hero__cue-dot {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background-color: var(--color-orange);
+}
+
+/* A short viewport has no room to spare below the fold marker. */
+@media (max-height: 700px) {
+  .hero__cue {
+    display: none;
+  }
+}
+
 .hero-visual {
   position: relative;
   display: grid;
   place-items: center;
   width: 100%;
-  max-width: 460px;
+  /* Clamped against viewport HEIGHT as well as width. This is the term that
+     makes the hero fit: on a short screen the ring gives way before the text
+     stack above it can be pushed off the bottom. */
+  max-width: min(100%, 460px, 52vh);
   margin-inline: auto;
   aspect-ratio: 1;
 }
 
+.hero-visual__glow,
 .hero-visual__ring,
 .hero-visual__disc,
 .hero-visual__product {
   grid-area: 1 / 1;
+}
+
+/* The lift under the ring. Without it the cut-out sat flat on a flat ground,
+   which is most of why the hero read cheap. Orange at low alpha, so it warms
+   the ground rather than announcing itself as a second element. */
+.hero-visual__glow {
+  width: 116%;
+  height: 116%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 45%,
+    color-mix(in srgb, var(--color-orange) 26%, transparent) 0%,
+    color-mix(in srgb, var(--color-orange) 9%, transparent) 42%,
+    transparent 68%
+  );
+  filter: blur(6px);
+  will-change: transform, opacity;
+  pointer-events: none;
 }
 
 .hero-visual__ring {
@@ -400,8 +551,11 @@
 }
 
 @media (max-width: 1023px) {
+  /* 34vh is the number that makes the phone layout fit. Headline, subline and
+     the two CTAs take roughly 62svh between them once the 72px header is off;
+     the ring gets what is left and no more. */
   .hero-visual {
-    max-width: 340px;
+    max-width: min(100%, 300px, 34vh);
   }
   .hero-visual__dots {
     display: none;
@@ -409,7 +563,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-visual__ring {
+  .hero-visual__ring,
+  .hero-visual__glow {
     will-change: auto;
   }
 }
@@ -711,6 +866,14 @@
   .range__lead .product-chip__frame {
     aspect-ratio: auto;
     height: 100%;
+  }
+
+  /* Backstop for an odd count. The lead occupies four cells, so the grid only
+     fills cleanly at 5 or 9 items. A single item left over on a third row read
+     as a mistake, so a trailing item widens to two columns and reads as a
+     deliberate second feature card instead. */
+  .range > li:nth-child(6):last-child {
+    grid-column: span 2;
   }
 }
 

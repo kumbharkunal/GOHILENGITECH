@@ -8,9 +8,18 @@
  * why it does not read as a generic circular photo frame. It also crops to the
  * subject, which is the honest way to present photography this size.
  *
- * One load sequence, then it is done. Never repeats. The ring keeps a very
- * slow idle rotation afterwards, which is the only continuous motion on the
- * site and is disabled outright under reduced motion.
+ * One load sequence, then it is done. Never repeats. Afterwards the ring keeps
+ * a very slow idle rotation and the visual answers the pointer with a shallow
+ * parallax. Both are transform only, both are disabled under reduced motion,
+ * and the parallax is never armed on a touch device where there is no pointer
+ * to follow.
+ *
+ * Sizing is the other half of this file. The section is one viewport tall
+ * measured in svh, not dvh: dvh changes as mobile browser chrome hides, which
+ * makes the hero resize mid scroll. svh is the smallest stable height, so
+ * committing to it is what stops the visual being cut off on a phone. The ring
+ * is then clamped against viewport height as well as width, so it gives way
+ * before the stack can overflow.
  *
  * Hero stack stays at four elements: headline, subline, CTAs, visual.
  */
@@ -53,6 +62,12 @@ export function Hero() {
           start + total * 0.3,
         )
         .fromTo(
+          '[data-hero-glow]',
+          { scale: 0.6, opacity: 0 },
+          { scale: 1, opacity: 1, duration: total * 1.1, ease: 'power2.out' },
+          start,
+        )
+        .fromTo(
           '[data-hero-ring]',
           { scale: 0.82, opacity: 0, rotate: -55 },
           { scale: 1, opacity: 1, rotate: 0, duration: total * 0.95, ease: 'power3.out' },
@@ -70,6 +85,12 @@ export function Hero() {
           { opacity: 1, scale: 1, duration: 0.4, stagger: 0.014, ease: 'back.out(2)' },
           start + total * 0.5,
         )
+        .fromTo(
+          '[data-hero-cue]',
+          { opacity: 0 },
+          { opacity: 1, duration: 0.5 },
+          start + total * 0.9,
+        )
 
       // Idle. Very slow, transform only, and the one continuous motion here.
       gsap.to('[data-hero-ring]', {
@@ -79,16 +100,82 @@ export function Hero() {
         repeat: -1,
         delay: total + start,
       })
+
+      // The glow breathes against the ring's rotation so the two never lock
+      // into a single readable rhythm.
+      gsap.to('[data-hero-glow]', {
+        scale: 1.08,
+        opacity: 0.72,
+        duration: 7,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: total + start,
+      })
+
+      // The scroll cue's travel is what reads as "there is more below"; a
+      // static chevron does not.
+      gsap.to('[data-hero-cue-dot]', {
+        y: 12,
+        opacity: 0,
+        duration: 1.4,
+        ease: 'power2.in',
+        repeat: -1,
+        repeatDelay: 0.35,
+      })
+
+      /**
+       * Pointer parallax. Pointer, not mouse: a stylus should drive it and a
+       * finger should not, and `(hover: hover)` is the only reliable way to ask
+       * that question. Depths differ per layer so the ring, the product and the
+       * dot grid separate rather than sliding as one flat plate.
+       */
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+
+      const layers: [string, number][] = [
+        ['[data-hero-glow]', 10],
+        ['[data-hero-ring]', 16],
+        ['[data-hero-product]', 30],
+        ['[data-hero-dots]', 22],
+      ]
+      const movers = layers.map(([sel, depth]) => ({
+        depth,
+        x: gsap.quickTo(sel, 'x', { duration: 0.7, ease: 'power3.out' }),
+        y: gsap.quickTo(sel, 'y', { duration: 0.7, ease: 'power3.out' }),
+      }))
+
+      const onMove = (e: PointerEvent) => {
+        const el = root.current
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        // -0.5 to 0.5 from the centre of the section.
+        const nx = (e.clientX - r.left) / r.width - 0.5
+        const ny = (e.clientY - r.top) / r.height - 0.5
+        for (const m of movers) {
+          m.x(nx * m.depth)
+          m.y(ny * m.depth)
+        }
+      }
+      const onLeave = () => {
+        for (const m of movers) {
+          m.x(0)
+          m.y(0)
+        }
+      }
+
+      const el = root.current
+      el?.addEventListener('pointermove', onMove)
+      el?.addEventListener('pointerleave', onLeave)
+      return () => {
+        el?.removeEventListener('pointermove', onMove)
+        el?.removeEventListener('pointerleave', onLeave)
+      }
     },
     { scope: root, dependencies: [] },
   )
 
   return (
-    <section
-      ref={root}
-      data-seam="0.34"
-      className="container-page relative flex min-h-[calc(100dvh-72px)] flex-col justify-center py-10 md:py-16"
-    >
+    <section ref={root} data-seam="0.34" className="hero container-page">
       {/* The headline takes the full measure. Sharing the row with the visual
           forces it to four lines at this width. DESIGN.md 5.1 */}
       <h1 className="text-h1">
@@ -101,7 +188,7 @@ export function Hero() {
         ))}
       </h1>
 
-      <div className="mt-8 grid items-center gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
+      <div className="hero__body">
         <div>
           {/* The ground is declared, not inherited from behind the fixed seam
               layer. Two reasons. It enforces DESIGN.md 5.1 structurally rather
@@ -112,35 +199,37 @@ export function Hero() {
               and axe reads that box rather than the pixels. Verified by
               sampling: the rendered ground behind this text is mist. */}
           <div className="max-w-[min(100%,60ch)]">
-            <p
-              data-hero-fade
-              className="mt-4 max-w-[52ch] text-body text-fg-muted md:mt-6 md:text-body-l"
-            >
+            <p data-hero-fade className="max-w-[52ch] text-body text-fg-muted md:text-body-l">
               {HOME.hero.subline}
             </p>
-            <div data-hero-fade className="mt-6 flex flex-wrap gap-3 md:mt-9">
+            <div data-hero-fade className="hero__ctas">
               <a
                 href={whatsappGeneral()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-sm bg-orange px-[22px] py-[14px] font-semibold text-ink transition-colors hover:bg-orange-hover"
+                className="hero-cta bg-orange text-ink hover:bg-orange-hover"
               >
-                <MessageCircle className="size-5" aria-hidden="true" />
-                {ACTIONS.whatsappEnquiry}
+                <MessageCircle className="size-5 shrink-0" aria-hidden="true" />
+                <span className="hidden sm:inline">{ACTIONS.whatsappEnquiry}</span>
+                <span className="sm:hidden">WhatsApp</span>
               </a>
               <a
                 href={telUrl(PRIMARY_PERSON.phone)}
-                className="inline-flex items-center gap-2 rounded-sm border px-[22px] py-[14px] font-semibold text-fg transition-colors hover:border-fg"
-                style={{ borderColor: 'var(--line-strong)' }}
+                className="hero-cta hero-cta--ghost text-fg"
               >
-                <Phone className="size-5" aria-hidden="true" />
-                Call {PRIMARY_PERSON.phoneDisplay.replace('+91 ', '')}
+                <Phone className="size-5 shrink-0" aria-hidden="true" />
+                <span className="hidden sm:inline">Call </span>
+                {PRIMARY_PERSON.phoneDisplay.replace('+91 ', '')}
               </a>
             </div>
           </div>
         </div>
 
         <div className="hero-visual" aria-hidden="true">
+          {/* Sits behind everything and gives the ring something to lift off.
+              A flat cut-out on a flat ground was the reason this read cheap. */}
+          <div data-hero-glow className="hero-visual__glow" />
+
           {/* The ring: the mark's own 180 degree arc and gap, at hero scale. */}
           <svg data-hero-ring viewBox="0 0 200 200" className="hero-visual__ring">
             <circle cx="100" cy="100" r="93" fill="none" stroke="var(--color-steel)" strokeWidth="0.8" opacity="0.5" />
@@ -170,12 +259,20 @@ export function Hero() {
           </div>
 
           {/* Dot grid, the one decorative element. Drawn, not an image. */}
-          <div className="hero-visual__dots">
+          <div data-hero-dots className="hero-visual__dots">
             {Array.from({ length: 36 }).map((_, i) => (
               <span key={i} data-hero-dot />
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Scroll cue. Hidden from assistive tech: it repeats what the scrollbar
+          already says, and there is nothing here to activate. */}
+      <div data-hero-cue className="hero__cue" aria-hidden="true">
+        <span className="hero__cue-rail">
+          <span data-hero-cue-dot className="hero__cue-dot" />
+        </span>
       </div>
     </section>
   )

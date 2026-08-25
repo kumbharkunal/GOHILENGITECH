@@ -27,7 +27,10 @@ import { Reveal } from '@/components/ui/Reveal'
  * the supply range, and 1994. Everything else is named in plain language.
  */
 
-const BUILD = PRODUCTS.filter((p) => p.side === 'build')
+// Customized Gearbox is a `build` product, but it is already represented by its
+// own category card in the drives grid below. Showing it here too both repeats
+// it and leaves the asymmetric range grid with an orphan on a third row.
+const BUILD = PRODUCTS.filter((p) => p.side === 'build' && p.category !== 'customized')
 const GEAR_FAMILIES = CATEGORIES.filter((c) =>
   ['helical', 'planetary', 'worm', 'customized'].includes(c.slug),
 )

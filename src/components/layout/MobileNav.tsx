@@ -175,11 +175,19 @@ export function MobileNav({
         </div>
       </div>
 
+      {/*
+        data-lenis-prevent is required, not cosmetic. Lenis calls preventDefault
+        on touch and wheel at the document, so without it this panel cannot be
+        scrolled at all on a phone: everything below the fold was unreachable.
+        overscroll-contain stops the page behind from taking over at the ends.
+      */}
       <nav
         aria-label="Main"
         onClick={stop}
-        className="on-ink relative flex h-full flex-col justify-between overflow-y-auto px-6"
+        data-lenis-prevent
+        className="relative flex h-full flex-col justify-between overflow-y-auto overscroll-contain px-6"
         style={{
+          WebkitOverflowScrolling: 'touch',
           paddingTop: 'calc(env(safe-area-inset-top) + 88px)',
           paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)',
         }}
@@ -197,14 +205,14 @@ export function MobileNav({
                 >
                   <Icon
                     className="size-5 shrink-0"
-                    style={{ color: active ? 'var(--color-orange)' : 'var(--color-steel)' }}
+                    style={{ color: active ? 'var(--fg-accent)' : 'var(--fg-secondary)' }}
                     aria-hidden="true"
                   />
                   <span className="flex min-w-0 flex-col">
                     <span
                       className="font-display text-[1.5rem] leading-none"
                       style={{
-                        color: active ? 'var(--color-orange)' : 'var(--color-mist)',
+                        color: active ? 'var(--fg-accent)' : 'var(--fg-primary)',
                         fontVariationSettings: '"wdth" 125',
                         fontWeight: 700,
                       }}
@@ -213,7 +221,7 @@ export function MobileNav({
                     </span>
                     <span
                       className="mt-1 font-mono text-micro"
-                      style={{ color: 'var(--color-steel)' }}
+                      style={{ color: 'var(--fg-secondary)' }}
                     >
                       {item.hint}
                     </span>
@@ -241,10 +249,10 @@ export function MobileNav({
               key={p.phone}
               href={telUrl(p.phone)}
               className="flex items-center justify-between gap-3 rounded-sm border px-4 py-3"
-              style={{ borderColor: 'rgb(151 152 154 / 0.4)', color: 'var(--color-mist)' }}
+              style={{ borderColor: 'var(--line-strong)', color: 'var(--fg-primary)' }}
             >
               <span className="flex items-center gap-2">
-                <Phone className="size-4" style={{ color: 'var(--color-steel)' }} aria-hidden="true" />
+                <Phone className="size-4" style={{ color: 'var(--fg-secondary)' }} aria-hidden="true" />
                 {p.name}
               </span>
               <span className="font-mono text-data">{p.phoneDisplay}</span>
@@ -254,12 +262,12 @@ export function MobileNav({
           <a
             href={`mailto:${COMPANY.email}`}
             className="flex items-center gap-2 pt-1 text-caption"
-            style={{ color: 'var(--color-steel)' }}
+            style={{ color: 'var(--fg-secondary)' }}
           >
             <Mail className="size-4" aria-hidden="true" />
             {COMPANY.email}
           </a>
-          <address className="flex items-start gap-2 not-italic text-caption" style={{ color: 'var(--color-steel)' }}>
+          <address className="flex items-start gap-2 not-italic text-caption" style={{ color: 'var(--fg-secondary)' }}>
             <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             <span>{COMPANY.address.short}</span>
           </address>

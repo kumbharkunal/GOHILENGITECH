@@ -140,7 +140,7 @@ export function Header() {
                     className="absolute left-0 block h-[2px] w-full rounded-sm"
                     style={{
                       top: i * 7,
-                      backgroundColor: open ? 'var(--color-mist)' : 'var(--fg-primary)',
+                      backgroundColor: 'var(--fg-primary)',
                       transformOrigin: '50% 50%',
                     }}
                   />
